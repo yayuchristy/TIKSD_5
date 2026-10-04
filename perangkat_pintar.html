@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Perangkat Pintar - Sistem I-P-O TIK SD</title>
+    <!-- Memuat Bootstrap CSS & Google Fonts -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            --card-bg: rgba(255, 255, 255, 0.98);
+        }
+        html, body {
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            color: #1e293b;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 16px 24px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .main-container {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        .navbar-brand-custom {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Bingkai Perangkat Utama yang Lebih Tinggi & Proporsional */
+        .device-frame {
+            width: 100%;
+            height: 220px;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 25px rgba(0,0,0,0.6), 0 8px 20px rgba(0,0,0,0.35);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            padding: 16px;
+        }
+        
+        /* Preview Kamera */
+        .cam-preview-box {
+            width: 100%; height: 110px; background: #0f172a; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; border: 1px solid #334155;
+        }
+        .cam-preview-box video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: none; }
+
+        /* Proyek 1: Bohlam */
+        .bulb-container {
+            font-size: 80px;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            filter: grayscale(90%) brightness(40%);
+            margin-bottom: 8px;
+        }
+        .bulb-container.on-yellow { filter: grayscale(0%) brightness(130%); text-shadow: 0 0 25px #f59e0b, 0 0 50px #d97706; transform: scale(1.12); }
+        .bulb-container.on-green { filter: grayscale(0%) brightness(130%) hue-rotate(90deg); text-shadow: 0 0 25px #10b981, 0 0 50px #059669; transform: scale(1.12); }
+        .bulb-container.on-purple { filter: grayscale(0%) brightness(130%) hue-rotate(240deg); text-shadow: 0 0 25px #a855f7, 0 0 50px #7c3aed; transform: scale(1.12); }
+        .bulb-container.on-red { filter: grayscale(0%) brightness(130%) hue-rotate(300deg); text-shadow: 0 0 25px #ef4444, 0 0 50px #dc2626; transform: scale(1.12); }
+
+        /* Proyek 2: Rumah Visual */
+        .house-scene {
+            width: 200px;
+            height: 125px;
+            position: relative;
+            background: linear-gradient(to bottom, #38bdf8, #bae6fd);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.5);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+            transition: background 0.5s ease;
+        }
+        .house-scene.night { background: linear-gradient(to bottom, #020617, #0f172a); }
+        .roof {
+            position: absolute; top: 5px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 0; border-left: 58px solid transparent; border-right: 58px solid transparent; border-bottom: 35px solid #e11d48;
+        }
+        .walls {
+            position: absolute; top: 40px; left: 50%; transform: translateX(-50%);
+            width: 72px; height: 75px; background: #fed7aa; border: 2px solid #1e293b; border-radius: 4px;
+        }
+        .door {
+            position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 22px; height: 36px; background: #475569; border-top-left-radius: 4px; border-top-right-radius: 4px;
+        }
+        .porch-lamp {
+            position: absolute; top: 46px; left: 50%; transform: translateX(-50%);
+            width: 10px; height: 10px; background: #94a3b8; border-radius: 50%; transition: all 0.3s ease;
+        }
+        .house-scene.night.color-yellow .porch-lamp { background: #fef08a; box-shadow: 0 0 12px 4px #f59e0b; }
+        .house-scene.night.color-green .porch-lamp { background: #a7f3d0; box-shadow: 0 0 12px 4px #10b981; }
+        .house-scene.night.color-purple .porch-lamp { background: #ddd6fe; box-shadow: 0 0 12px 4px #a855f7; }
+        .house-scene.night.color-red .porch-lamp { background: #fecaca; box-shadow: 0 0 12px 4px #ef4444; }
+
+        .clothesline {
+            position: absolute; bottom: 4px; left: 8px; display: flex; gap: 4px; transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+        .shirt { width: 10px; height: 14px; background: #0284c7; border-radius: 2px 2px 0 0; }
+        .shirt:nth-child(2) { background: #059669; }
+
+        .fence {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 22px;
+            background: repeating-linear-gradient(90deg, #334155, #334155 6px, #64748b 6px, #64748b 11px);
+            border-top: 2px solid #1e293b;
+            transform: translateY(100%);
+            transition: transform 0.4s ease;
+        }
+        .house-scene.night.fence-closed .fence { transform: translateY(0); }
+        .house-scene.night.fence-open .fence { transform: translateY(100%); }
+        .house-scene.night .clothesline { transform: translateX(-35px); opacity: 0; }
+
+        .status-text {
+            color: #f8fafc; font-weight: 600; font-size: 12px; text-align: center; margin-top: 8px;
+            background: rgba(15, 23, 42, 0.85); padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .color-dot {
+            width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid #ffffff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.25); transition: transform 0.2s;
+        }
+        .color-dot:hover { transform: scale(1.15); }
+        .dot-yellow { background: #f59e0b; }
+        .dot-green { background: #10b981; }
+        .dot-purple { background: #a855f7; }
+        .dot-red { background: #ef4444; }
+
+        /* Slot Perakit Sensor */
+        .sensor-slot {
+            border: 2px dashed rgba(99, 102, 241, 0.5);
+            background: rgba(99, 102, 241, 0.04);
+            border-radius: 10px;
+            padding: 10px 14px;
+            transition: all 0.3s ease;
+        }
+        .sensor-slot.active-installed {
+            border: 2px solid #10b981;
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        .card { 
+            padding: 20px; 
+            border-radius: 18px !important; 
+            background: var(--card-bg);
+            box-shadow: 0 16px 30px -6px rgba(0, 0, 0, 0.3) !important;
+            border: 1px solid rgba(255, 255, 255, 0.7) !important;
+            height: 100%;
+        }
+        .nav-pills .nav-link.active {
+            background: var(--primary-gradient) !important;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            color: white !important;
+        }
+        .nav-pills .nav-link {
+            color: #cbd5e1;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 8px 22px;
+            border-radius: 50px;
+            font-size: 14px;
+        }
+        .btn-custom-primary {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            border: none;
+            color: white;
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.35);
+            font-weight: 600;
+        }
+        .btn-custom-primary:hover { background: linear-gradient(135deg, #4f46e5, #4338ca); color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <!-- Header -->
+        <header class="text-center mb-3">
+            <h1 class="fw-extrabold fs-4 navbar-brand-custom mb-1">Simulasi Perangkat Pintar (Sistem I-P-O)</h1>
+            <p class="text-light opacity-75 mb-0 small fw-medium" style="font-size: 13px;">Media Pembelajaran Interaktif TIK SD Kelas 5</p>
+        </header>
+
+        <!-- Navigasi Tab -->
+        <ul class="nav nav-pills justify-content-center mb-3 gap-3" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active shadow-sm" id="tab-btn-1" onclick="switchPage(1)">💡 Proyek 1: Perakit Lampu Cerdas</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link shadow-sm" id="tab-btn-2" onclick="switchPage(2)">🏠 Proyek 2: Perakit Rumah Pintar</button>
+            </li>
+        </ul>
+
+        <!-- ================= PROYEK 1 ================= -->
+        <div id="page-1" class="row g-4 justify-content-center align-items-stretch">
+            <!-- Kolom Simulasi -->
+            <div class="col-lg-7">
+                <div class="card d-flex flex-column justify-content-between">
+                    <div>
+                        <h2 class="text-dark fs-5 fw-bold mb-3 border-bottom pb-2">1. Lampu Cerdas (Perakitan Input & Output)</h2>
+                        <div class="device-frame mb-3">
+                            <div id="bulbIcon" class="bulb-container">💡</div>
+                            <div id="clapStatus" class="status-text">Pasang Komponen Input Terlebih Dahulu di Bawah!</div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column gap-3">
+                        <!-- Panel Perakit Input Proyek 1 -->
+                        <div class="sensor-slot" id="p1SlotBox">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold small text-dark" id="p1Label">⚙️ Slot Input: Belum Ada Komponen</span>
+                                <div id="p1ActionBtns" class="d-flex gap-2">
+                                    <button class="btn btn-outline-primary btn-sm py-1 px-3 fw-bold" style="font-size: 12px;" onclick="installP1Input('switch')">➕ Pasang Saklar</button>
+                                    <button class="btn btn-outline-purple btn-sm py-1 px-3 fw-bold text-dark border-purple" style="font-size: 12px;" onclick="installP1Input('mic')">➕ Pasang Mic Suara</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-light p-3 rounded-3 border d-flex justify-content-between align-items-center">
+                            <span class="fw-bold small text-secondary">🎨 Warna Lampu:</span>
+                            <div class="d-flex gap-2">
+                                <div class="color-dot dot-yellow" onclick="setBulbColor('yellow')" title="Kuning"></div>
+                                <div class="color-dot dot-green" onclick="setBulbColor('green')" title="Hijau"></div>
+                                <div class="color-dot dot-purple" onclick="setBulbColor('purple')" title="Ungu"></div>
+                                <div class="color-dot dot-red" onclick="setBulbColor('red')" title="Merah"></div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button id="p1ControlBtn" class="btn btn-secondary btn-sm fw-bold flex-fill rounded-pill py-2.5 shadow-sm" disabled onclick="actionP1()">🔘 Uji Tombol/Perangkat</button>
+                            <button class="btn btn-outline-danger btn-sm fw-bold rounded-pill px-4 py-2.5 shadow-sm" style="font-size: 13px;" onclick="resetP1()">🔄 Reset</button>
+                        </div>
+
+                        <div id="p1MicArea" style="display: none;">
+                            <div class="d-flex justify-content-between align-items-center small text-muted mb-1" style="font-size: 12px;">
+                                <span>Level Suara Mic:</span>
+                                <span id="volumeVal" class="fw-bold">0%</span>
+                            </div>
+                            <div class="progress rounded-pill" style="height: 8px; background-color: #e2e8f0;">
+                                <div id="volumeBar" class="progress-bar rounded-pill" role="progressbar" style="width: 0%; background: linear-gradient(90deg, #6366f1, #a855f7);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kolom Soal Analisis -->
+            <div class="col-lg-5">
+                <div class="card d-flex flex-column justify-content-between" style="border-top: 5px solid #6366f1 !important;">
+                    <div>
+                        <h2 class="text-dark fs-5 fw-bold mb-3 border-bottom pb-2">📝 Tugas Analisis Siswa</h2>
+                        <div class="bg-light p-3.5 rounded-3 border mb-3">
+                            <p class="text-muted small mb-3" style="font-size: 13px;"><em>Amati simulasi di samping, lalu jawab pertanyaan berikut di buku tulis!</em></p>
+                            <ol class="ps-3 mb-0 text-dark" style="font-size: 13px; line-height: 1.6;">
+                                <li class="mb-2">Sebutkan benda atau perangkat apa saja yang berperan sebagai <strong>inputan</strong> agar lampu bisa merespons!</li>
+                                <li class="mb-2">Bagaimana sistem melakukan <strong>proses</strong> saat tombol saklar atau suara tepuk tangan diterima?</li>
+                                <li class="mb-2">Apa bentuk <strong>output</strong> akhir atau hasil yang ditampilkan oleh perangkat lampu?</li>
+                                <li class="mb-0">Apa fungsi adanya tombol <strong>saklar manual</strong> jika sistem sensor otomatis sudah ada?</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="alert alert-warning py-2 px-3 text-center small mb-0 rounded-pill shadow-sm fw-semibold border-0 bg-amber-subtle text-dark" style="font-size: 12.5px;">
+                        💡 Tulis jawaban lengkap beserta alasanmu ya!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PROYEK 2 ================= -->
+        <div id="page-2" class="row g-4 justify-content-center align-items-stretch" style="display: none;">
+            <!-- Kolom Simulasi -->
+            <div class="col-lg-7">
+                <div class="card d-flex flex-column justify-content-between">
+                    <div>
+                        <h2 class="text-dark fs-5 fw-bold mb-3 border-bottom pb-2">2. Rumah Pintar (Perakitan Sensor & Kamera Asli)</h2>
+                        <div class="device-frame mb-3">
+                            <div id="houseScene" class="house-scene color-yellow">
+                                <div class="roof"></div>
+                                <div class="walls"><div class="door"></div></div>
+                                <div class="porch-lamp"></div>
+                                <div class="clothesline">
+                                    <div class="shirt"></div>
+                                    <div class="shirt"></div>
+                                </div>
+                                <div class="fence"></div>
+                            </div>
+                            <div id="houseStatus" class="status-text">Pasang Sensor Terlebih Dahulu di Bawah!</div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column gap-3">
+                        <!-- Preview Kamera di Atas -->
+                        <div class="cam-preview-box" id="previewBox" style="display: none;">
+                            <span class="text-white-50 fw-semibold small" id="camPlaceholderText" style="font-size: 12px;">📷 Pratinjau Kamera Sensor Aktif</span>
+                            <video id="webcamVideo" autoplay playsinline muted></video>
+                        </div>
+                        <canvas id="camCanvas" style="display:none;"></canvas>
+
+                        <!-- Panel Perakit Input Proyek 2 -->
+                        <div class="sensor-slot" id="p2SlotBox">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold small text-dark" id="p2Label">⚙️ Slot Input: Belum Ada Sensor Terpasang</span>
+                                <div id="p2ActionBtns" class="d-flex gap-2">
+                                    <button class="btn btn-outline-primary btn-sm py-1 px-3 fw-bold" style="font-size: 12px;" onclick="installP2Sensor('ldr')">➕ Pasang LDR</button>
+                                    <button class="btn btn-outline-dark btn-sm py-1 px-3 fw-bold" style="font-size: 12px;" onclick="installP2Sensor('cam')">➕ Pasang Kamera</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Pengaturan Ambang Batas Slider -->
+                            <div id="sensorConfigArea" style="display: none;" class="mt-2 pt-2 border-top">
+                                <div class="d-flex justify-content-between align-items-center text-muted mb-1" style="font-size: 12px;">
+                                    <span id="sliderLabel">Batas Cahaya (Gelap/Terang):</span>
+                                    <span id="thresholdVal" class="fw-bold text-primary">35%</span>
+                                </div>
+                                <input type="range" class="form-range form-range-sm" min="10" max="90" value="35" id="thresholdSlider" oninput="updateThreshold(this.value)">
+                            </div>
+                        </div>
+
+                        <div class="bg-light p-3 rounded-3 border d-flex justify-content-between align-items-center">
+                            <span class="fw-bold small text-secondary">🎨 Warna Lampu:</span>
+                            <div class="d-flex gap-2">
+                                <div class="color-dot dot-yellow" onclick="setHouseLampColor('yellow')" title="Kuning"></div>
+                                <div class="color-dot dot-green" onclick="setHouseLampColor('green')" title="Hijau"></div>
+                                <div class="color-dot dot-purple" onclick="setHouseLampColor('purple')" title="Ungu"></div>
+                                <div class="color-dot dot-red" onclick="setHouseLampColor('red')" title="Merah"></div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button id="testNightBtn" class="btn btn-secondary btn-sm fw-bold flex-fill rounded-pill py-2.5 shadow-sm" disabled onclick="simulateNightMode()">🌙 Uji Kondisi Malam</button>
+                            <button id="toggleFenceBtn" class="btn btn-warning btn-sm fw-bold flex-fill rounded-pill py-2.5 shadow-sm text-dark" style="display:none;" onclick="overrideFence()">🚪 Buka Pagar</button>
+                            <button class="btn btn-outline-danger btn-sm fw-bold rounded-pill px-4 py-2.5 shadow-sm" style="font-size: 13px;" onclick="resetP2()">🔄 Reset</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kolom Soal Analisis -->
+            <div class="col-lg-5">
+                <div class="card d-flex flex-column justify-content-between" style="border-top: 5px solid #6366f1 !important;">
+                    <div>
+                        <h2 class="text-dark fs-5 fw-bold mb-3 border-bottom pb-2">📝 Tugas Analisis Siswa</h2>
+                        <div class="bg-light p-3.5 rounded-3 border mb-3">
+                            <p class="text-muted small mb-3" style="font-size: 13px;"><em>Amati simulasi di samping, lalu jawab pertanyaan berikut di buku tulis!</em></p>
+                            <ol class="ps-3 mb-0 text-dark" style="font-size: 13px; line-height: 1.6;">
+                                <li class="mb-2">Apa komponen atau perangkat yang bertindak sebagai <strong>inputan</strong> untuk mendeteksi kondisi luar?</li>
+                                <li class="mb-2">Bagaimana sistem melakukan <strong>proses</strong> pengambilan keputusan saat mendeteksi siang atau malam?</li>
+                                <li class="mb-2">Sebutkan berbagai macam perangkat <strong>output</strong> yang bergerak atau menyala secara otomatis!</li>
+                                <li class="mb-0">Apa fungsi adanya tombol <strong>buka/tutup pagar manual</strong> saat malam hari ketika sistem otomatis berjalan?</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="alert alert-info py-2 px-3 text-center small mb-0 rounded-pill shadow-sm fw-semibold border-0 bg-info-subtle text-dark" style="font-size: 12.5px;">
+                        💡 Diskusikan jawabannya bersama kelompokmu ya!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer kecil -->
+    <footer class="text-center text-light opacity-75 mt-3 fw-medium" style="font-size: 12px;">
+        SD Santa Ursula BSD • Modul Pembelajaran TIK Kelas 5
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function switchPage(pageNum) {
+            document.getElementById('page-1').style.display = pageNum === 1 ? 'flex' : 'none';
+            document.getElementById('page-2').style.display = pageNum === 2 ? 'flex' : 'none';
+            document.getElementById('tab-btn-1').classList.toggle('active', pageNum === 1);
+            document.getElementById('tab-btn-2').classList.toggle('active', pageNum === 2);
+        }
+
+        // --- PROYEK 1 JAVASCRIPT ---
+        let p1Type = null, isP1LightOn = false, p1BulbColor = 'yellow';
+        let audioContext = null, analyser = null, microphone = null, isMicActive = false, lastClapTime = 0;
+
+        function installP1Input(type) {
+            p1Type = type;
+            const slotBox = document.getElementById('p1SlotBox');
+            const label = document.getElementById('p1Label');
+            const actionBtns = document.getElementById('p1ActionBtns');
+            const controlBtn = document.getElementById('p1ControlBtn');
+            const status = document.getElementById('clapStatus');
+            const micArea = document.getElementById('p1MicArea');
+
+            slotBox.classList.add('active-installed');
+            actionBtns.style.display = "none";
+            controlBtn.removeAttribute("disabled");
+            controlBtn.classList.remove("btn-secondary");
+            controlBtn.classList.add("btn-custom-primary");
+
+            if (type === 'switch') {
+                label.innerHTML = "✅ Input Terpasang: <b>Tombol Saklar Manual</b>";
+                controlBtn.innerText = "🔘 Klik Saklar Lampu";
+                status.innerText = "Lampu: MATI (Gunakan Tombol)";
+                micArea.style.display = "none";
+            } else {
+                label.innerHTML = "✅ Input Terpasang: <b>Sensor Suara (Mikrofon)</b>";
+                controlBtn.innerText = "🎤 Aktifkan Mikrofon Suara";
+                status.innerText = "Lampu: MATI (Katakan/Tepuk Tangan)";
+                micArea.style.display = "block";
+            }
+        }
+
+        function resetP1() {
+            p1Type = null; isP1LightOn = false;
+            if (audioContext) audioContext.close();
+            isMicActive = false;
+            
+            document.getElementById('p1SlotBox').classList.remove('active-installed');
+            document.getElementById('p1Label').innerHTML = "⚙️ Slot Input: Belum Ada Komponen";
+            document.getElementById('p1ActionBtns').style.display = "flex";
+            const controlBtn = document.getElementById('p1ControlBtn');
+            controlBtn.setAttribute("disabled", "true");
+            controlBtn.classList.remove("btn-custom-primary", "btn-danger");
+            controlBtn.classList.add("btn-secondary");
+            controlBtn.innerText = "🔘 Uji Tombol/Perangkat";
+            document.getElementById('p1MicArea').style.display = "none";
+            document.getElementById('bulbIcon').className = "bulb-container";
+            document.getElementById('clapStatus').innerText = "Pasang Komponen Input Terlebih Dahulu di Bawah!";
+        }
+
+        function setBulbColor(color) {
+            p1BulbColor = color;
+            const bulb = document.getElementById('bulbIcon');
+            if (isP1LightOn) bulb.className = "bulb-container on-" + color;
+        }
+
+        function actionP1() {
+            if (p1Type === 'switch') {
+                isP1LightOn = !isP1LightOn;
+                const bulb = document.getElementById('bulbIcon');
+                const status = document.getElementById('clapStatus');
+                if (isP1LightOn) {
+                    bulb.className = "bulb-container on-" + p1BulbColor;
+                    status.innerText = "Lampu: NYALA ✨ (" + p1BulbColor.toUpperCase() + ")";
+                } else {
+                    bulb.className = "bulb-container";
+                    status.innerText = "Lampu: MATI";
+                }
+            } else if (p1Type === 'mic') {
+                toggleMic();
+            }
+        }
+
+        async function toggleMic() {
+            const btn = document.getElementById('p1ControlBtn');
+            if (!isMicActive) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    analyser = audioContext.createAnalyser();
+                    microphone = audioContext.createMediaStreamSource(stream);
+                    microphone.connect(analyser);
+                    analyser.fftSize = 512;
+                    isMicActive = true;
+                    btn.innerText = "🛑 Matikan Mic";
+                    btn.classList.remove("btn-custom-primary");
+                    btn.classList.add("btn-danger");
+                    monitorAudio();
+                } catch (err) { alert("Akses mikrofon ditolak."); }
+            } else {
+                if (audioContext) audioContext.close();
+                isMicActive = false;
+                btn.innerText = "🎤 Aktifkan Mikrofon Suara";
+                btn.classList.remove("btn-danger");
+                btn.classList.add("btn-custom-primary");
+            }
+        }
+
+        function monitorAudio() {
+            if (!isMicActive) return;
+            const dataArray = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(dataArray);
+            let sum = 0;
+            for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+            let percentage = Math.min(100, Math.round((sum / dataArray.length / 60) * 100));
+            
+            document.getElementById('volumeBar').style.width = percentage + '%';
+            document.getElementById('volumeVal').innerText = percentage + '%';
+
+            let now = Date.now();
+            if (percentage > 75 && (now - lastClapTime > 1000)) {
+                isP1LightOn = !isP1LightOn;
+                const bulb = document.getElementById('bulbIcon');
+                const status = document.getElementById('clapStatus');
+                if (isP1LightOn) {
+                    bulb.className = "bulb-container on-" + p1BulbColor;
+                    status.innerText = "Lampu: NYALA KARENA SUARA! 🎤";
+                } else {
+                    bulb.className = "bulb-container";
+                    status.innerText = "Lampu: MATI";
+                }
+                lastClapTime = now;
+            }
+            requestAnimationFrame(monitorAudio);
+        }
+
+        // --- PROYEK 2 JAVASCRIPT ---
+        let p2Type = null, currentThreshold = 35;
+        let isNightActive = false, isFenceOverridden = false, currentHouseColor = 'yellow';
+        let videoStream = null, isCamActive = false, camInterval = null;
+
+        function installP2Sensor(type) {
+            p2Type = type;
+            const slotBox = document.getElementById('p2SlotBox');
+            const label = document.getElementById('p2Label');
+            const actionBtns = document.getElementById('p2ActionBtns');
+            const configArea = document.getElementById('sensorConfigArea');
+            const testBtn = document.getElementById('testNightBtn');
+            const houseStatus = document.getElementById('houseStatus');
+            const previewBox = document.getElementById('previewBox');
+
+            slotBox.classList.add('active-installed');
+            actionBtns.style.display = "none";
+            testBtn.removeAttribute("disabled");
+            testBtn.classList.remove("btn-secondary");
+            testBtn.classList.add("btn-danger");
+
+            if (type === 'ldr') {
+                label.innerHTML = "✅ Input Terpasang: <b>Sensor Cahaya (LDR) Simulasi</b>";
+                configArea.style.display = "block";
+                previewBox.style.display = "none";
+                houseStatus.innerText = "Siang (Batas < " + currentThreshold + "%): Lampu Mati";
+            } else {
+                label.innerHTML = "✅ Input Terpasang: <b>Kamera Asli (Webcam Sensor)</b>";
+                configArea.style.display = "none";
+                previewBox.style.display = "flex";
+                testBtn.innerText = "📷 Aktifkan Kamera Asli";
+                houseStatus.innerText = "Kamera Belum Dinyalakan";
+            }
+        }
+
+        function resetP2() {
+            p2Type = null; isNightActive = false; isFenceOverridden = false;
+            if (isCamActive) toggleCameraStream(false);
+
+            document.getElementById('p2SlotBox').classList.remove('active-installed');
+            document.getElementById('p2Label').innerHTML = "⚙️ Slot Input: Belum Ada Sensor Terpasang";
+            document.getElementById('p2ActionBtns').style.display = "flex";
+            document.getElementById('sensorConfigArea').style.display = "none";
+            document.getElementById('previewBox').style.display = "none";
+            
+            const testBtn = document.getElementById('testNightBtn');
+            testBtn.setAttribute("disabled", "true");
+            testBtn.classList.remove("btn-danger", "btn-dark");
+            testBtn.classList.add("btn-secondary");
+            testBtn.innerText = "🌙 Uji Kondisi Malam";
+
+            applyHouseNightState(false);
+            document.getElementById('houseStatus').innerText = "Pasang Sensor Terlebih Dahulu di Bawah!";
+        }
+
+        function updateThreshold(val) {
+            currentThreshold = val;
+            document.getElementById('thresholdVal').innerText = val + "%";
+        }
+
+        function setHouseLampColor(color) {
+            currentHouseColor = color;
+            const houseScene = document.getElementById('houseScene');
+            houseScene.classList.remove('color-yellow', 'color-green', 'color-purple', 'color-red');
+            houseScene.classList.add('color-' + color);
+        }
+
+        function simulateNightMode() {
+            if (p2Type === 'ldr') {
+                isNightActive = !isNightActive;
+                isFenceOverridden = false;
+                applyHouseNightState(isNightActive);
+            } else if (p2Type === 'cam') {
+                toggleCameraStream(!isCamActive);
+            }
+        }
+
+        function applyHouseNightState(isNight) {
+            const houseScene = document.getElementById('houseScene');
+            const houseStatus = document.getElementById('houseStatus');
+            const fenceBtn = document.getElementById('toggleFenceBtn');
+            const nightBtn = document.getElementById('testNightBtn');
+
+            if (isNight) {
+                houseScene.classList.add('night', 'fence-closed');
+                houseScene.classList.remove('fence-open');
+                fenceBtn.style.display = "inline-block";
+                nightBtn.innerText = "☀ Ubah ke Siang";
+                nightBtn.classList.remove("btn-danger");
+                nightBtn.classList.add("btn-dark");
+                houseStatus.innerText = "Malam: Lampu Nyala Otomatis, Pagar Tutup";
+            } else {
+                houseScene.classList.remove('night', 'fence-closed', 'fence-open');
+                fenceBtn.style.display = "none";
+                nightBtn.innerText = "🌙 Uji Kondisi Malam";
+                nightBtn.classList.remove("btn-dark");
+                nightBtn.classList.add("btn-danger");
+                houseStatus.innerText = "Siang: Lampu Mati, Jemuran Luar";
+            }
+        }
+
+        async function toggleCameraStream(open) {
+            const btn = document.getElementById('testNightBtn');
+            const video = document.getElementById('webcamVideo');
+            const placeholder = document.getElementById('camPlaceholderText');
+
+            if (open) {
+                try {
+                    videoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                    video.srcObject = videoStream;
+                    video.style.display = "block";
+                    placeholder.style.display = "none";
+                    isCamActive = true;
+                    btn.innerText = "🛑 Matikan Kamera";
+                    camInterval = setInterval(analyzeCameraBrightness, 300);
+                } catch (err) { alert("Akses kamera ditolak."); }
+            } else {
+                if (videoStream) videoStream.getTracks().forEach(track => track.stop());
+                clearInterval(camInterval);
+                isCamActive = false;
+                video.style.display = "none";
+                placeholder.style.display = "block";
+                btn.innerText = "📷 Aktifkan Kamera Asli";
+                applyHouseNightState(false);
+            }
+        }
+
+        function analyzeCameraBrightness() {
+            const video = document.getElementById('webcamVideo');
+            const canvas = document.getElementById('camCanvas');
+            const ctx = canvas.getContext('2d');
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                canvas.width = 40; canvas.height = 40;
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                let data = ctx.getImageData(0, 0, 40, 40).data, total = 0;
+                for (let i = 0; i < data.length; i += 4) total += (data[i]*0.299 + data[i+1]*0.587 + data[i+2]*0.114);
+                let percent = Math.round((total / (data.length / 4) / 255) * 100);
+                
+                const houseScene = document.getElementById('houseScene');
+                const houseStatus = document.getElementById('houseStatus');
+                const fenceBtn = document.getElementById('toggleFenceBtn');
+
+                if (percent < 35) {
+                    houseScene.classList.add('night');
+                    if (!isFenceOverridden) houseScene.classList.add('fence-closed');
+                    fenceBtn.style.display = "inline-block";
+                    houseStatus.innerText = "Malam (Kamera " + percent + "%): Lampu Nyala Otomatis";
+                } else {
+                    houseScene.classList.remove('night', 'fence-closed', 'fence-open');
+                    fenceBtn.style.display = "none";
+                    isFenceOverridden = false;
+                    houseStatus.innerText = "Siang (Kamera " + percent + "%): Lampu Mati";
+                }
+            }
+        }
+
+        function overrideFence() {
+            isFenceOverridden = !isFenceOverridden;
+            const houseScene = document.getElementById('houseScene');
+            const houseStatus = document.getElementById('houseStatus');
+            const fenceBtn = document.getElementById('toggleFenceBtn');
+
+            if (isFenceOverridden) {
+                houseScene.classList.add('fence-open');
+                houseScene.classList.remove('fence-closed');
+                fenceBtn.innerText = "🔒 Tutup Pagar";
+                houseStatus.innerText = "Malam: Pagar Dibuka Manual oleh Siswa";
+            } else {
+                houseScene.classList.remove('fence-open');
+                houseScene.classList.add('fence-closed');
+                fenceBtn.innerText = "🚪 Buka Pagar";
+                houseStatus.innerText = "Malam: Pagar Ditutup Otomatis Kembali";
+            }
+        }
+    </script>
+</body>
+</html>

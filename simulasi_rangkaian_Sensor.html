@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorium Simulasi Smart Lamp Arduino - Kelas 5 TIK</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --panel-bg: #1e293b;
+            --border-color: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-green: #22c55e;
+            --accent-yellow: #eab308;
+            --accent-red: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        header {
+            background-color: var(--panel-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 1.25rem;
+            color: var(--accent-blue);
+        }
+
+        .badge-grade {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent-blue);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 300px 1fr 320px;
+            flex: 1;
+            height: calc(100vh - 61px);
+        }
+
+        /* Sidebar Kiri: Tahapan & Kotak Alat */
+        .sidebar-left {
+            background-color: var(--panel-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+        }
+
+        .panel-section {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .panel-section h3 {
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .step-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        /* Tombol Buku Petunjuk */
+        .btn-hint {
+            background: rgba(234, 179, 8, 0.15);
+            color: var(--accent-yellow);
+            border: 1px solid rgba(234, 179, 8, 0.4);
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: background 0.2s;
+            margin-bottom: 8px;
+        }
+        .btn-hint:hover { background: rgba(234, 179, 8, 0.25); }
+
+        /* Inventaris Komponen */
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
+        .item-card {
+            background: #273548;
+            border: 1px dashed var(--border-color);
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+            cursor: grab;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .item-card:hover {
+            border-color: var(--accent-blue);
+            background: #334155;
+        }
+
+        .item-card h4 {
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+
+        .item-card p {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* Canvas Area Tengah */
+        .workspace {
+            position: relative;
+            background: radial-gradient(circle, #1e293b 0%, #0f172a 100%);
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+            overflow: hidden;
+        }
+
+        .workspace-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            background: rgba(30, 41, 59, 0.8);
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .status-box {
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-yellow);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn:hover { background: #2563eb; }
+        .btn-secondary { background: #475569; }
+        .btn-secondary:hover { background: #334155; }
+
+        .workbench-area {
+            flex: 1;
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            position: relative;
+            background-color: rgba(15, 23, 42, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* SVG Wire Layer */
+        #wire-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* Dropped Components on Workbench */
+        .workbench-component {
+            position: absolute;
+            background: var(--panel-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+            user-select: none;
+        }
+
+        .workbench-component h4 {
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .pin-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .pin-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .pin-row.right {
+            flex-direction: row-reverse;
+        }
+
+        .pin-node {
+            width: 12px;
+            height: 12px;
+            background: #64748b;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #fff;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .pin-node:hover {
+            transform: scale(1.3);
+            background: var(--accent-blue);
+        }
+
+        #drop-sensor {
+            left: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 150px;
+        }
+
+        #drop-arduino {
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 180px;
+            background: #064e3b;
+            border-color: #059669;
+        }
+
+        #drop-led {
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 150px;
+        }
+
+        .empty-drop-slot {
+            width: 160px;
+            height: 120px;
+            border: 2px dashed rgba(148, 163, 184, 0.3);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 10px;
+        }
+
+        /* Sidebar Kanan: Kabel & Testing */
+        .sidebar-right {
+            background-color: var(--panel-bg);
+            border-left: 1px solid var(--border-color);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+        }
+
+        .cable-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .cable-btn {
+            background: #334155;
+            border: 2px solid transparent;
+            border-radius: 6px;
+            padding: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.75rem;
+            color: var(--text-main);
+            transition: all 0.2s;
+        }
+
+        .cable-btn.selected {
+            border-color: var(--accent-blue);
+            background: rgba(56, 189, 248, 0.15);
+            font-weight: bold;
+        }
+
+        .cable-color-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 4px;
+        }
+
+        /* Panel Kalibrasi & Uji Sensor */
+        .testing-panel {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            display: none;
+        }
+
+        .testing-panel.active {
+            display: block;
+        }
+
+        .slider-group {
+            margin-top: 8px;
+        }
+
+        .slider-group label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent-blue);
+        }
+
+        .sensor-readout {
+            font-size: 0.85rem;
+            margin-top: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .lamp-preview {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            background: #111827;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .lamp-preview.off { color: #6b7280; }
+        .lamp-preview.on { color: var(--accent-yellow); text-shadow: 0 0 10px rgba(234, 179, 8, 0.6); }
+
+        /* Modal Buku Petunjuk */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .modal-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            width: 500px;
+            max-width: 90%;
+            padding: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+        .modal-card h2 { color: var(--accent-yellow); font-size: 1.1rem; margin-bottom: 12px; }
+        .modal-card p, .modal-card li { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 8px; }
+        .modal-card ul { padding-left: 20px; margin-bottom: 16px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>⚡ Lab Simulasi Perangkat Pintar (Smart Lamp)</h1>
+        <div class="badge-grade">Kurikulum TIK - Kelas 5 SD</div>
+    </header>
+
+    <div class="main-container">
+        <!-- SIDEBAR KIRI: PERSIAPAN ALAT & PETUNJUK -->
+        <div class="sidebar-left">
+            <button class="btn-hint" onclick="openHintModal()">📖 Buka Buku Petunjuk Kabel</button>
+
+            <div class="panel-section">
+                <h3>🛠️ Tahap 1: Siapkan Komponen</h3>
+                <p class="step-desc">Seret komponen elektronik ke meja kerja tengah untuk mulai merakit.</p>
+                <div class="inventory-grid">
+                    <div class="item-card" draggable="true" id="item-sensor" ondragstart="drag(event)">
+                        <h4>Sensor Cahaya (LDR)</h4>
+                        <p>Pendeteksi gelap/terang</p>
+                    </div>
+                    <div class="item-card" draggable="true" id="item-arduino" ondragstart="drag(event)">
+                        <h4>Mikrokontroler Arduino</h4>
+                        <p>Otak pengolah program</p>
+                    </div>
+                    <div class="item-card" draggable="true" id="item-led" ondragstart="drag(event)">
+                        <h4>Lampu LED Otomatis</h4>
+                        <p>Output penerangan</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- WORKSPACE TENGAH -->
+        <div class="workspace">
+            <div class="workspace-header">
+                <div class="status-box">
+                    <div class="status-indicator" id="status-dot"></div>
+                    <span id="status-text">Status: Letakkan komponen & baca buku petunjuk kabel!</span>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="resetLab()">🔄 Reset</button>
+                    <button class="btn" onclick="checkCircuit()">🔍 Periksa Rangkaian</button>
+                </div>
+            </div>
+
+            <div class="workbench-area" id="workbench" ondragover="allowDrop(event)" ondrop="dropComponent(event)">
+                <svg id="wire-canvas"></svg>
+
+                <div id="slot-sensor" class="empty-drop-slot" style="position: absolute; left: 40px; top: 50%; transform: translateY(-50%);">
+                    [ Letakkan Sensor LDR ]
+                </div>
+                <div id="slot-arduino" class="empty-drop-slot" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">
+                    [ Letakkan Arduino Uno ]
+                </div>
+                <div id="slot-led" class="empty-drop-slot" style="position: absolute; right: 40px; top: 50%; transform: translateY(-50%);">
+                    [ Letakkan Lampu LED ]
+                </div>
+            </div>
+        </div>
+
+        <!-- SIDEBAR KANAN: KABEL & PENGUJIAN -->
+        <div class="sidebar-right">
+            <div class="panel-section">
+                <h3>🔌 Tahap 2: Pilih Jenis Kabel</h3>
+                <p class="step-desc">Pilih warna & jenis kabel yang tepat dari buku petunjuk sebelum menyambung pin.</p>
+                <div class="cable-selector">
+                    <div class="cable-btn selected" onclick="selectCable('vcc', '#ef4444')">
+                        <span class="cable-color-dot" style="background:#ef4444;"></span>Arus 5V (Merah)
+                    </div>
+                    <div class="cable-btn" onclick="selectCable('gnd', '#64748b')">
+                        <span class="cable-color-dot" style="background:#64748b;"></span>Ground (Abu)
+                    </div>
+                    <div class="cable-btn" onclick="selectCable('signal', '#22c55e')">
+                        <span class="cable-color-dot" style="background:#22c55e;"></span>Sensor (Hijau)
+                    </div>
+                    <div class="cable-btn" onclick="selectCable('control', '#eab308')">
+                        <span class="cable-color-dot" style="background:#eab308;"></span>Kontrol (Kuning)
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section testing-panel" id="testing-section">
+                <h3>🧪 Tahap 3: Uji Coba Sensor</h3>
+                <p class="step-desc">Rangkaian benar! Geser slider untuk menguji lampu otomatis.</p>
+                
+                <div class="slider-group">
+                    <label>Intensitas Cahaya Ruangan:</label>
+                    <input type="range" id="light-slider" min="0" max="100" value="80" oninput="updateSensorTest()">
+                    <div class="sensor-readout">
+                        <span>Nilai: <strong id="sensor-val">80</strong></span>
+                        <span id="light-status-label">Terang (Siang)</span>
+                    </div>
+                </div>
+
+                <div class="lamp-preview off" id="lamp-preview-box">
+                    💡 LAMPU LED: PADAM
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL BUKU PETUNJUK -->
+    <div class="modal-overlay" id="hint-modal">
+        <div class="modal-card">
+            <h2>📜 Buku Petunjuk Perangkaian Smart Lamp</h2>
+            <p>Untuk merangkai sistem lampu otomatis yang sukses, ikuti aturan logika teknis berikut dengan teliti:</p>
+            <ul>
+                <li><b>Daya Utama (Kabel Merah / 5V):</b> Hubungkan pin <code>VCC</code> pada Sensor LDR dan pin <code>VCC</code> pada Lampu LED menuju sumber daya <code>5V</code> di Arduino Uno.</li>
+                <li><b>Kabel Netral (Kabel Abu / GND):</b> Hubungkan pin <code>GND</code> Sensor dan <code>GND</code> Lampu LED menuju pin <code>GND</code> (Ground) pada Arduino.</li>
+                <li><b>Data Sensor (Kabel Hijau / SIG):</b> Sensor LDR harus membaca data analog cahaya luar, oleh karena itu pin <code>SIG</code> wajib dihubungkan ke pin Analog <code>A0</code> Arduino.</li>
+                <li><b>Kendali Output (Kabel Kuning / CTRL):</b> Arduino mengirim perintah nyala/padam ke lampu lewat pin Digital <code>D8</code>. Hubungkan pin <code>CTRL</code> LED ke pin <code>D8</code>.</li>
+            </ul>
+            <button class="btn" style="width:100%; margin-top:8px;" onclick="closeHintModal()">Mengerti, Tutup Petunjuk</button>
+        </div>
+    </div>
+
+    <script>
+        let activeCableType = 'vcc';
+        let activeCableColor = '#ef4444';
+        let placedComponents = { sensor: false, arduino: false, led: false };
+        let connections = {};
+        let selectedPinNode = null;
+        let circuitVerified = false;
+
+        function openHintModal() { document.getElementById('hint-modal').style.display = 'flex'; }
+        function closeHintModal() { document.getElementById('hint-modal').style.display = 'none'; }
+
+        function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+        function allowDrop(ev) { ev.preventDefault(); }
+
+        function dropComponent(ev) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            
+            if (data === "item-sensor" && !placedComponents.sensor) {
+                placedComponents.sensor = true;
+                document.getElementById('slot-sensor').remove();
+                createSensorHTML();
+            } else if (data === "item-arduino" && !placedComponents.arduino) {
+                placedComponents.arduino = true;
+                document.getElementById('slot-arduino').remove();
+                createArduinoHTML();
+            } else if (data === "item-led" && !placedComponents.led) {
+                placedComponents.led = true;
+                document.getElementById('slot-led').remove();
+                createLEDHTML();
+            }
+            checkAllPlaced();
+        }
+
+        function createSensorHTML() {
+            const wb = document.getElementById('workbench');
+            const div = document.createElement('div');
+            div.id = "drop-sensor";
+            div.className = "workbench-component";
+            div.innerHTML = `
+                <h4>👁️ Sensor LDR</h4>
+                <div class="pin-container">
+                    <div class="pin-row"><span>VCC</span><div class="pin-node" onclick="handlePinClick('sensor-vcc', this)"></div></div>
+                    <div class="pin-row"><span>GND</span><div class="pin-node" onclick="handlePinClick('sensor-gnd', this)"></div></div>
+                    <div class="pin-row"><span>SIG</span><div class="pin-node" onclick="handlePinClick('sensor-sig', this)"></div></div>
+                </div>
+            `;
+            wb.appendChild(div);
+        }
+
+        function createArduinoHTML() {
+            const wb = document.getElementById('workbench');
+            const div = document.createElement('div');
+            div.id = "drop-arduino";
+            div.className = "workbench-component";
+            div.style.background = "#064e3b";
+            div.style.borderColor = "#059669";
+            div.innerHTML = `
+                <h4>⚡ ARDUINO UNO</h4>
+                <div style="display:flex; justify-content:space-between; width:100%;">
+                    <div class="pin-container" style="width:45%;">
+                        <div class="pin-row"><span>5V</span><div class="pin-node" onclick="handlePinClick('arduino-5v', this)"></div></div>
+                        <div class="pin-row"><span>GND</span><div class="pin-node" onclick="handlePinClick('arduino-gnd1', this)"></div></div>
+                        <div class="pin-row"><span>A0</span><div class="pin-node" onclick="handlePinClick('arduino-a0', this)"></div></div>
+                    </div>
+                    <div class="pin-container" style="width:45%;">
+                        <div class="pin-row right"><span>D8</span><div class="pin-node" onclick="handlePinClick('arduino-d8', this)"></div></div>
+                        <div class="pin-row right"><span>GND</span><div class="pin-node" onclick="handlePinClick('arduino-gnd2', this)"></div></div>
+                        <div class="pin-row right"><span>5V</span><div class="pin-node" onclick="handlePinClick('arduino-5v2', this)"></div></div>
+                    </div>
+                </div>
+            `;
+            wb.appendChild(div);
+        }
+
+        function createLEDHTML() {
+            const wb = document.getElementById('workbench');
+            const div = document.createElement('div');
+            div.id = "drop-led";
+            div.className = "workbench-component";
+            div.innerHTML = `
+                <h4>💡 Lampu LED</h4>
+                <div class="pin-container">
+                    <div class="pin-row right"><div class="pin-node" onclick="handlePinClick('led-vcc', this)"></div><span>VCC</span></div>
+                    <div class="pin-row right"><div class="pin-node" onclick="handlePinClick('led-gnd', this)"></div><span>GND</span></div>
+                    <div class="pin-row right"><div class="pin-node" onclick="handlePinClick('led-ctrl', this)"></div><span>CTRL</span></div>
+                </div>
+            `;
+            wb.appendChild(div);
+        }
+
+        function checkAllPlaced() {
+            if (placedComponents.sensor && placedComponents.arduino && placedComponents.led) {
+                document.getElementById('status-text').innerText = "Komponen lengkap! Hubungkan kabel sesuai Buku Petunjuk.";
+                document.getElementById('status-dot').style.background = "var(--accent-blue)";
+            }
+        }
+
+        function selectCable(type, color) {
+            activeCableType = type;
+            activeCableColor = color;
+            document.querySelectorAll('.cable-btn').forEach(btn => btn.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+        }
+
+        function handlePinClick(pinId, nodeElement) {
+            if (!placedComponents.sensor || !placedComponents.arduino || !placedComponents.led) {
+                alert("Letakkan seluruh komponen ke meja kerja terlebih dahulu!");
+                return;
+            }
+
+            if (!selectedPinNode) {
+                selectedPinNode = { id: pinId, element: nodeElement };
+                nodeElement.style.background = activeCableColor;
+            } else {
+                if (selectedPinNode.id === pinId) return;
+
+                connections[selectedPinNode.id] = pinId;
+                connections[pinId] = selectedPinNode.id;
+                nodeElement.style.background = activeCableColor;
+
+                selectedPinNode = null;
+                drawWires();
+            }
+        }
+
+        function drawWires() {
+            const svg = document.getElementById('wire-canvas');
+            svg.innerHTML = '';
+            const drawnPairs = new Set();
+
+            for (let p1 in connections) {
+                let p2 = connections[p1];
+                let pairKey = [p1, p2].sort().join('-');
+                if (drawnPairs.has(pairKey)) continue;
+                drawnPairs.add(pairKey);
+
+                let el1 = eventTargetNode(p1);
+                let el2 = eventTargetNode(p2);
+
+                if (el1 && el2) {
+                    let rect1 = el1.getBoundingClientRect();
+                    let rect2 = el2.getBoundingClientRect();
+                    let svgRect = svg.getBoundingClientRect();
+
+                    let x1 = rect1.left + rect1.width / 2 - svgRect.left;
+                    let y1 = rect1.top + rect1.height / 2 - svgRect.top;
+                    let x2 = rect2.left + rect2.width / 2 - svgRect.left;
+                    let y2 = rect2.top + rect2.height / 2 - svgRect.top;
+
+                    let path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    let color = getCableColor(p1, p2);
+                    let curveControlX = (x1 + x2) / 2;
+                    
+                    path.setAttribute("d", `M ${x1} ${y1} Q ${curveControlX} ${y1 - 40} ${x2} ${y2}`);
+                    path.setAttribute("stroke", color);
+                    path.setAttribute("stroke-width", "3");
+                    path.setAttribute("fill", "none");
+                    path.setAttribute("stroke-linecap", "round");
+                    svg.appendChild(path);
+                }
+            }
+        }
+
+        function eventTargetNode(pinId) {
+            const map = {
+                'sensor-vcc': 0, 'sensor-gnd': 1, 'sensor-sig': 2,
+                'arduino-5v': 3, 'arduino-gnd1': 4, 'arduino-a0': 5,
+                'arduino-d8': 6, 'arduino-gnd2': 7, 'arduino-5v2': 8,
+                'led-vcc': 9, 'led-gnd': 10, 'led-ctrl': 11
+            };
+            let idx = map[pinId];
+            let nodes = document.querySelectorAll('.pin-node');
+            return nodes[idx] || null;
+        }
+
+        function getCableColor(p1, p2) {
+            if (p1.includes('vcc') || p2.includes('vcc') || p1.includes('5v') || p2.includes('5v')) return '#ef4444';
+            if (p1.includes('gnd') || p2.includes('gnd')) return '#64748b';
+            if (p1.includes('sig') || p2.includes('sig')) return '#22c55e';
+            return '#eab308';
+        }
+
+        function checkCircuit() {
+            if (!placedComponents.sensor || !placedComponents.arduino || !placedComponents.led) {
+                alert("Lengkapi penempatan komponen terlebih dahulu!");
+                return;
+            }
+
+            let c = connections;
+            let isValid = (
+                (c['sensor-vcc'] === 'arduino-5v' || c['sensor-vcc'] === 'arduino-5v2') &&
+                (c['sensor-gnd'] === 'arduino-gnd1' || c['sensor-gnd'] === 'arduino-gnd2') &&
+                c['sensor-sig'] === 'arduino-a0' &&
+                (c['led-vcc'] === 'arduino-5v' || c['led-vcc'] === 'arduino-5v2') &&
+                (c['led-gnd'] === 'arduino-gnd1' || c['led-gnd'] === 'arduino-gnd2') &&
+                c['led-ctrl'] === 'arduino-d8'
+            );
+
+            if (isValid) {
+                document.getElementById('status-text').innerText = "Status: Rangkaian Sukses! Silakan Uji Sensor.";
+                document.getElementById('status-dot').style.background = "var(--accent-green)";
+                document.getElementById('testing-section').classList.add('active');
+                circuitVerified = true;
+            } else {
+                alert("⚠️ Rangkaian belum tepat! Silakan baca kembali 'Buku Petunjuk Kabel' di pojok kiri atas untuk memastikan pin VCC, GND, Sensor (A0), dan Kontrol (D8) terhubung dengan benar.");
+            }
+        }
+
+        function updateSensorTest() {
+            if (!circuitVerified) return;
+            let val = document.getElementById('light-slider').value;
+            document.getElementById('sensor-val').innerText = val;
+
+            let label = document.getElementById('light-status-label');
+            let lampBox = document.getElementById('lamp-preview-box');
+
+            if (val < 40) {
+                label.innerText = "Gelap (Malam)";
+                lampBox.className = "lamp-preview on";
+                lampBox.innerHTML = "💡 LAMPU LED: MENYALA OTOMATIS";
+            } else {
+                label.innerText = "Terang (Siang)";
+                lampBox.className = "lamp-preview off";
+                lampBox.innerHTML = "💡 LAMPU LED: PADAM";
+            }
+        }
+
+        function resetLab() { location.reload(); }
+    </script>
+</body>
+</html>
