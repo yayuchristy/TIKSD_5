@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulasi Interaktif Alur Komputer (I - P - O)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%);
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  h1 { font-size: 2.5rem; color: #00d2ff; text-shadow: 0 0 12px rgba(0,210,255,0.6); margin-bottom: 8px; }
+  p.subtitle { color: #a0a0c0; font-size: 1.15rem; margin-bottom: 25px; }
+
+  /* Tombol Pilihan Mode */
+  .mode-selector {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 25px;
+    background: rgba(255,255,255,0.05);
+    padding: 10px;
+    border-radius: 35px;
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .mode-btn {
+    background: transparent;
+    border: none;
+    color: #bbb;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: all 0.3s;
+  }
+
+  .mode-btn.active {
+    background: #00d2ff;
+    color: #000;
+    box-shadow: 0 0 12px rgba(0,210,255,0.6);
+  }
+
+  /* Container Utama Layout */
+  .system-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 35px 40px;
+    border-radius: 30px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  /* Kartu Komponen */
+  .card {
+    width: 260px;
+    height: 320px;
+    background: #222235;
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 18px;
+    border: 3.5px solid transparent;
+    transition: all 0.3s ease;
+    text-align: center;
+  }
+
+  .card h3 { font-size: 1.3rem; text-transform: uppercase; letter-spacing: 1px; }
+  .card .badge { font-size: 0.85rem; padding: 4px 12px; border-radius: 15px; background: rgba(255,255,255,0.1); margin-top: 4px; }
+
+  #card-input { border-color: #3498db; }
+  #card-process { border-color: #e67e22; }
+  #card-output { border-color: #2ecc71; }
+
+  /* Frame Visual Benda */
+  .display-box {
+    width: 100%;
+    height: 150px;
+    background: #12121c;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 12px;
+  }
+
+  /* Text & Detail Tampilan CPU */
+  .cpu-detail {
+    font-size: 0.95rem;
+    color: #f1c40f;
+    font-family: 'Courier New', Courier, monospace;
+    margin-top: 8px;
+    text-align: center;
+    word-break: break-all;
+  }
+
+  /* Animasi Otak Berpikir di CPU */
+  @keyframes brainPulse {
+    0% { transform: scale(1); filter: drop-shadow(0 0 2px #f39c12); }
+    50% { transform: scale(1.18); filter: drop-shadow(0 0 15px #f1c40f); }
+    100% { transform: scale(1); filter: drop-shadow(0 0 2px #f39c12); }
+  }
+
+  .processing-active .brain-icon {
+    animation: brainPulse 0.4s infinite ease-in-out;
+    fill: #f1c40f !important;
+  }
+
+  /* Layar Output Komputer */
+  .screen-text {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #2ecc71;
+    text-shadow: 0 0 12px #2ecc71;
+    text-align: center;
+  }
+
+  /* Panah Aliran Sinyal */
+  .signal-path {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .arrow-body {
+    width: 55px;
+    height: 10px;
+    background: #333;
+    border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .signal-dot {
+    width: 18px;
+    height: 100%;
+    background: #00d2ff;
+    border-radius: 5px;
+    position: absolute;
+    left: -18px;
+    box-shadow: 0 0 10px #00d2ff;
+  }
+
+  @keyframes moveRight {
+    0% { left: -18px; }
+    100% { left: 55px; }
+  }
+
+  .active-signal .signal-dot {
+    animation: moveRight 0.4s linear forwards;
+  }
+
+  .instruction-box {
+    margin-top: 30px;
+    background: #252538;
+    padding: 14px 30px;
+    border-radius: 30px;
+    font-size: 1.05rem;
+    color: #ffcc00;
+    border: 1px dashed #ffcc00;
+  }
+
+  /* Form Input Matematika Interaktif */
+  .math-input-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .num-input {
+    width: 50px;
+    height: 40px;
+    background: #1a1a2e;
+    border: 2px solid #3498db;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1.2rem;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .action-btn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 0 #c0392b;
+    margin-top: 6px;
+  }
+  .action-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #c0392b; }
+
+  /* Style Khusus Tombol Youtube */
+  .yt-btn {
+    background: #ff0000;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(255,0,0,0.4);
+    transition: transform 0.2s;
+  }
+  .yt-btn:hover { transform: scale(1.05); }
+</style>
+</head>
+<body>
+
+  <h1>Simulasi Alur Kerja Komputer (I - P - O)</h1>
+  <p class="subtitle">Pilih mode aksi di bawah ini dan amati bagaimana CPU mengolah datanya!</p>
+
+  <!-- Pilihan Mode -->
+  <div class="mode-selector">
+    <button class="mode-btn active" onclick="setMode('type', this)">⌨️ Mode Teks & Biner</button>
+    <button class="mode-btn" onclick="setMode('math', this)">🧮 Mode Hitung Bebas</button>
+    <button class="mode-btn" onclick="setMode('app', this)">📱 Mode Buka Aplikasi</button>
+    <button class="mode-btn" onclick="setMode('game', this)">🎮 Mode Game (Lompat)</button>
+  </div>
+
+  <div class="system-container">
+    
+    <!-- KARTU 1: INPUT -->
+    <div class="card" id="card-input">
+      <div>
+        <h3>1. INPUT</h3>
+        <div class="badge" style="color: #3498db;" id="input-badge">Masukan Data</div>
+      </div>
+      
+      <div class="display-box" id="input-box-content">
+        <span id="input-val" style="font-size: 2.2rem; font-weight: bold; color: #3498db;">[ Tekan Key ]</span>
+      </div>
+      
+      <small style="color: #aaa;" id="input-device-label">Perangkat: <b>Keyboard</b></small>
+    </div>
+
+    <!-- PANAH 1 -->
+    <div class="signal-path" id="path-1">
+      <small style="color: #666; font-size: 0.75rem;">Sinyal Masuk</small>
+      <div class="arrow-body"><div class="signal-dot"></div></div>
+    </div>
+
+    <!-- KARTU 2: PROCESS (CPU) -->
+    <div class="card" id="card-process">
+      <div>
+        <h3>2. PROCESS</h3>
+        <div class="badge" style="color: #e67e22;">Otak / CPU</div>
+      </div>
+
+      <div class="display-box" id="cpu-display">
+        <!-- SVG Otak -->
+        <svg class="brain-icon" viewBox="0 0 24 24" style="width:55px; height:55px; fill:#e67e22;">
+          <path d="M12,3c-4.97,0-9,4.03-9,9c0,2.12,0.74,4.07,1.97,5.61L4.35,19.2C3.52,17.22,3,14.68,3,12c0-4.97,4.03-9,9-9s9,4.03,9,9c0,2.68-0.52,5.22-1.35,7.2l-0.62-1.59C20.26,16.07,21,14.12,21,12C21,7.03,16.97,3,12,3z M12,6c-3.31,0-6,2.69-6,6c0,1.01,0.25,1.97,0.7,2.8l1.46-3.74C8.06,10.68,8,10.35,8,10c0-2.21,1.79-4,4-4s4,1.79,4,4c0,0.35-0.06,0.68-0.16,1.06l1.46,3.74c0.45-0.83,0.7-1.79,0.7-2.8C18,8.69,15.31,6,12,6z M12,10c-1.1,0-2,0.9-2,2c0,0.26,0.06,0.5,0.15,0.73l1.85-4.72C12.00,8.01,12.00,8,12,10z"/>
+        </svg>
+        <div class="cpu-detail" id="cpu-detail-text">Menunggu...</div>
+      </div>
+
+      <small id="status-text" style="color: #aaa;">Status: <b>Standby</b></small>
+    </div>
+
+    <!-- PANAH 2 -->
+    <div class="signal-path" id="path-2">
+      <small style="color: #666; font-size: 0.75rem;">Sinyal Hasil</small>
+      <div class="arrow-body"><div class="signal-dot"></div></div>
+    </div>
+
+    <!-- KARTU 3: OUTPUT -->
+    <div class="card" id="card-output">
+      <div>
+        <h3>3. OUTPUT</h3>
+        <div class="badge" style="color: #2ecc71;">Hasil Keluar</div>
+      </div>
+
+      <div class="display-box" style="border: 2px solid #2ecc71;" id="output-box-content">
+        <span class="screen-text" id="output-val">_</span>
+      </div>
+
+      <small style="color: #aaa;">Perangkat: <b>Layar Monitor</b></small>
+    </div>
+
+  </div>
+
+  <div class="instruction-box" id="instruction-text">
+    💡 <b>Petunjuk:</b> Tekan tombol huruf atau angka apa saja di keyboard komputermu!
+  </div>
+
+<script>
+  let currentMode = 'type';
+  let isProcessing = false;
+  let activeTimeouts = []; // Menyimpan semua timer animasi agar bisa di-reset instan
+
+  // Fungsi Reset Animasi Instan saat pindah mode
+  function clearAllAnim() {
+    activeTimeouts.forEach(t => clearTimeout(t));
+    activeTimeouts = [];
+    isProcessing = false;
+
+    document.getElementById('path-1').classList.remove('active-signal');
+    document.getElementById('path-2').classList.remove('active-signal');
+    document.getElementById('card-process').classList.remove('processing-active');
+    document.getElementById('status-text').innerText = "Standby";
+  }
+
+  function setMode(mode, element) {
+    clearAllAnim(); // Reset semua status & animasi berjalan
+    currentMode = mode;
+    
+    // Update tombol UI aktif
+    document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+    element.classList.add('active');
+
+    // Reset isi tampilan
+    document.getElementById('output-box-content').innerHTML = `<span class="screen-text" id="output-val">_</span>`;
+    document.getElementById('cpu-detail-text').innerText = 'Menunggu...';
+
+    const inputContent = document.getElementById('input-box-content');
+    const instrText = document.getElementById('instruction-text');
+    const deviceLabel = document.getElementById('input-device-label');
+
+    if (mode === 'type') {
+      inputContent.innerHTML = `<span id="input-val" style="font-size: 2.2rem; font-weight: bold; color: #3498db;">[ Tekan Key ]</span>`;
+      instrText.innerHTML = `💡 <b>Petunjuk:</b> Tekan huruf/angka di keyboard! CPU akan mengubahnya ke <b>Kode Biner (0 & 1)</b>!`;
+      deviceLabel.innerHTML = `Perangkat: <b>Keyboard</b>`;
+    } else if (mode === 'math') {
+      inputContent.innerHTML = `
+        <div class="math-input-group">
+          <input type="number" id="num1" class="num-input" value="5">
+          <span style="font-size: 1.2rem; font-weight: bold;">+</span>
+          <input type="number" id="num2" class="num-input" value="3">
+        </div>
+        <button class="action-btn" onclick="runCustomMath()"> Hitung = ?</button>
+      `;
+      instrText.innerHTML = `💡 <b>Petunjuk:</b> Masukkan 2 angka bebas di kotak input, lalu klik tombol <b>Hitung</b>!`;
+      deviceLabel.innerHTML = `Perangkat: <b>Keyboard & Mouse</b>`;
+    } else if (mode === 'app') {
+      inputContent.innerHTML = `
+        <button class="yt-btn" onclick="runAppProcess()">
+          <svg style="width:24px;height:24px;fill:white" viewBox="0 0 24 24">
+            <path d="M10,15L15.19,12L10,9V15M21.56,7.17C21.69,7.64 21.78,8.27 21.84,9.07C21.91,9.87 21.94,10.56 21.94,11.16L22,12C22,14.19 21.84,15.8 21.56,16.83C21.31,17.73 20.73,18.31 19.83,18.56C18.8,18.84 17.19,19 15,19B15,19H9C6.81,19 5.2,18.84 4.17,18.56C3.27,18.31 2.69,17.73 2.44,16.83C2.16,15.8 2,14.19 2,12C2,9.81 2.16,8.2 2.44,7.17C2.69,6.27 3.27,5.69 4.17,5.44C5.2,5.16 6.81,5 9,5H15C17.19,5 18.8,5.16 19.83,5.44C20.73,5.69 21.31,6.27 21.56,7.17Z"/>
+          </svg>
+          Buka YouTube
+        </button>
+      `;
+      instrText.innerHTML = `💡 <b>Petunjuk:</b> Klik tombol merah <b>Buka YouTube</b> di atas!`;
+      deviceLabel.innerHTML = `Perangkat: <b>Mouse (Klik)</b>`;
+    } else if (mode === 'game') {
+      inputContent.innerHTML = `<span style="font-size: 1rem; color: #3498db; font-weight: bold;">Tekan [ SPACEBAR ]<br>untuk Lompat</span>`;
+      instrText.innerHTML = `💡 <b>Petunjuk:</b> Tekan tombol <b>SPACEBAR</b> di keyboard-mu!`;
+      deviceLabel.innerHTML = `Perangkat: <b>Keyboard (Game)</b>`;
+    }
+  }
+
+  // EVENT LISTENER KEYBOARD
+  window.addEventListener('keydown', function(e) {
+    if(isProcessing) return;
+
+    if (currentMode === 'type' && e.key.length === 1) {
+      const char = e.key.toUpperCase();
+      const binary = char.charCodeAt(0).toString(2).padStart(8, '0');
+      runProcess(char, `Ketik: '${char}'<br>Biner: <b>${binary}</b>`, char);
+    } else if (currentMode === 'game' && e.code === 'Space') {
+      runProcess("SPACE", "Logika Gravitasi & Fisika", "🏃‍♂️ 💨 🦘<br><small style='font-size:1rem; color:#2ecc71;'>LOMPAT!</small>");
+    }
+  });
+
+  // FUNGSI HITUNG BEBAS
+  function runCustomMath() {
+    if(isProcessing) return;
+    const n1 = parseInt(document.getElementById('num1').value) || 0;
+    const n2 = parseInt(document.getElementById('num2').value) || 0;
+    const result = n1 + n2;
+
+    runProcess(`${n1} + ${n2}`, `Kalkulasi:<br>${n1} + ${n2} = ${result}`, `Hasil = ${result}`);
+  }
+
+  // FUNGSI BUKA YOUTUBE
+  function runAppProcess() {
+    if(isProcessing) return;
+    
+    const ytOutputHTML = `
+      <div style="display:flex; flex-direction:column; align-items:center;">
+        <svg style="width:48px;height:48px;fill:#ff0000" viewBox="0 0 24 24">
+          <path d="M10,15L15.19,12L10,9V15M21.56,7.17C21.69,7.64 21.78,8.27 21.84,9.07C21.91,9.87 21.94,10.56 21.94,11.16L22,12C22,14.19 21.84,15.8 21.56,16.83C21.31,17.73 20.73,18.31 19.83,18.56C18.8,18.84 17.19,19 15,19B15,19H9C6.81,19 5.2,18.84 4.17,18.56C3.27,18.31 2.69,17.73 2.44,16.83C2.16,15.8 2,14.19 2,12C2,9.81 2.16,8.2 2.44,7.17C2.69,6.27 3.27,5.69 4.17,5.44C5.2,5.16 6.81,5 9,5H15C17.19,5 18.8,5.16 19.83,5.44C20.73,5.69 21.31,6.27 21.56,7.17Z"/>
+        </svg>
+        <span style="font-size:0.9rem; color:#fff; margin-top:4px; font-weight:bold;">YouTube Terbuka!</span>
+      </div>
+    `;
+
+    runProcess("Klik YouTube", "Proses Sinyal & Membuka App...", ytOutputHTML, true);
+  }
+
+  // CORE LOGIC ANIMASI IPO
+  function runProcess(inputValue, cpuText, outputValue, isCustomHTML = false) {
+    isProcessing = true;
+
+    if(currentMode === 'type') {
+      const inputValElem = document.getElementById('input-val');
+      if(inputValElem) inputValElem.innerText = inputValue;
+    }
+    
+    document.getElementById('path-1').classList.add('active-signal');
+
+    // Timer Stage 1: CPU Process
+    activeTimeouts.push(setTimeout(() => {
+      document.getElementById('path-1').classList.remove('active-signal');
+      document.getElementById('card-process').classList.add('processing-active');
+      document.getElementById('status-text').innerHTML = "<b style='color:#f1c40f;'>Mengolah...</b>";
+      document.getElementById('cpu-detail-text').innerHTML = cpuText;
+    }, 400));
+
+    // Timer Stage 2: Output Signal
+    activeTimeouts.push(setTimeout(() => {
+      document.getElementById('card-process').classList.remove('processing-active');
+      document.getElementById('status-text').innerHTML = "<b style='color:#2ecc71;'>Selesai!</b>";
+      document.getElementById('path-2').classList.add('active-signal');
+    }, 1200));
+
+    // Timer Stage 3: Final Display
+    activeTimeouts.push(setTimeout(() => {
+      document.getElementById('path-2').classList.remove('active-signal');
+      
+      const outBox = document.getElementById('output-box-content');
+      if(outBox) {
+        if(isCustomHTML) {
+          outBox.innerHTML = outputValue;
+        } else {
+          outBox.innerHTML = `<span class="screen-text">${outputValue}</span>`;
+        }
+      }
+
+      document.getElementById('status-text').innerText = "Standby";
+      isProcessing = false;
+    }, 1600));
+  }
+</script>
+</body>
+</html>
