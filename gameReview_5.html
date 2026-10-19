@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clash of Smart Devices v8.0 - Custom Tactical Edition</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Orbitron:wght@700;900&display=swap');
+
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Fredoka', sans-serif; 
+            background: #0d0f18; 
+            color: #f3f4f6; 
+            text-align: center; 
+            margin: 0; 
+            padding: 20px; 
+            overflow-x: hidden; 
+        }
+        
+        h1 { 
+            font-family: 'Orbitron', sans-serif; 
+            color: #ffcc00; 
+            text-shadow: 0 4px 0 #b38600, 0 0 20px rgba(255, 204, 0, 0.4); 
+            margin: 0 0 5px; 
+            font-size: 2.4rem; 
+            letter-spacing: 2px; 
+        }
+        p.subtitle { 
+            color: #ff4757; 
+            font-weight: 700; 
+            font-size: 1.1rem; 
+            margin-bottom: 25px; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            text-shadow: 0 2px 0 #800000;
+        }
+
+        /* Control Top Bar */
+        .top-bar { display: flex; justify-content: center; margin-bottom: 25px; }
+        .btn-music { 
+            background: #2ed573; 
+            color: #0d0f18; 
+            border: none; 
+            border-bottom: 4px solid #20bf6b; 
+            padding: 10px 24px; 
+            border-radius: 20px; 
+            font-family: 'Fredoka', sans-serif; 
+            font-weight: 700; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            transition: 0.2s transform, 0.2s background; 
+        }
+        .btn-music:active { transform: translateY(3px); border-bottom-width: 1px; }
+
+        /* Papan Desa Game-Style */
+        .village-container { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 35px; }
+        .card { 
+            background: linear-gradient(180deg, #1e272e 0%, #0f172a 100%); 
+            border: 3px solid #ffa801; 
+            border-radius: 20px; 
+            width: 195px; 
+            padding: 15px 10px; 
+            box-shadow: 0 8px 0 #000, 0 0 15px rgba(255, 168, 1, 0.2); 
+            position: relative; 
+            transition: 0.2s transform;
+        }
+        .card.active { transform: scale(1.05); border-color: #ff4757; box-shadow: 0 8px 0 #000, 0 0 25px rgba(255, 71, 87, 0.5); }
+        
+        /* Nama Desa BISA EDIT (Clickable Editable Text) */
+        .village-name { 
+            font-family: 'Orbitron', sans-serif; 
+            margin: 0; 
+            color: #ffd32a; 
+            font-size: 0.95rem; 
+            text-shadow: 0 2px 0 #000; 
+            cursor: pointer; 
+            padding: 2px 5px; 
+            border-radius: 6px; 
+            display: inline-block;
+            transition: 0.2s background;
+        }
+        .village-name:hover { background: rgba(255, 211, 42, 0.2); }
+
+        .village-icon { font-size: 2.2rem; margin: 4px 0; filter: drop-shadow(0 4px 0 #000); }
+        .elixir { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; font-weight: 900; color: #00d2d3; margin: 5px 0; text-shadow: 0 3px 0 #000; }
+        
+        /* Hati / Nyawa Bantuan */
+        .hearts-box { 
+            display: flex; 
+            justify-content: center; 
+            gap: 4px; 
+            margin: 4px 0; 
+            background: rgba(0,0,0,0.4); 
+            padding: 4px 8px; 
+            border-radius: 12px; 
+        }
+        .heart-icon { 
+            font-size: 1.2rem; 
+            cursor: pointer; 
+            transition: 0.2s transform; 
+            user-select: none;
+        }
+        .heart-icon:hover { transform: scale(1.3); }
+        .heart-icon.lost { filter: grayscale(100%) opacity(0.3); }
+
+        .btn-group { display: flex; justify-content: center; gap: 6px; margin-top: 8px; }
+        .btn-score { 
+            background: #3c40c6; 
+            color: #fff; 
+            border: none; 
+            border-bottom: 3px solid #1e272e; 
+            padding: 6px 12px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: 700; 
+            font-size: 0.85rem; 
+            font-family: 'Fredoka', sans-serif; 
+            transition: 0.1s; 
+        }
+        .btn-score:active { transform: translateY(2px); border-bottom-width: 1px; }
+
+        /* Grid 50 Soal 3D Buttons */
+        .grid-title { font-family: 'Orbitron', sans-serif; margin-top: 25px; color: #ffd32a; font-size: 1.2rem; text-shadow: 0 2px 0 #000; }
+        .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 12px; max-width: 1000px; margin: 20px auto; }
+        
+        .q-btn { 
+            background: #00d2d3; 
+            color: #0f172a; 
+            border: none; 
+            border-bottom: 5px solid #00a8a9; 
+            font-family: 'Orbitron', sans-serif; 
+            font-size: 1.2rem; 
+            font-weight: 900; 
+            padding: 14px 0; 
+            border-radius: 14px; 
+            cursor: pointer; 
+            transition: 0.15s; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4); 
+        }
+        .q-btn:hover { background: #ff4757; color: #fff; border-bottom-color: #d63031; transform: translateY(-3px); }
+        .q-btn:active { transform: translateY(2px); border-bottom-width: 1px; }
+        .q-btn.used { background: #2d3436 !important; border-bottom-color: #1e272e !important; color: #636e72 !important; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+        /* Pop-up Modal Soal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.88); justify-content: center; align-items: center; z-index: 999; backdrop-filter: blur(8px); }
+        .modal-content { 
+            background: #1e272e; 
+            border: 4px solid #00d2d3; 
+            padding: 25px; 
+            border-radius: 24px; 
+            max-width: 720px; 
+            width: 90%; 
+            text-align: left; 
+            position: relative; 
+            box-shadow: 0 10px 0 #000, 0 0 30px rgba(0, 210, 211, 0.4); 
+        }
+        
+        .modal-header { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; color: #ffd32a; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #485460; padding-bottom: 10px; margin-bottom: 18px; }
+        .badge { background: #ff4757; color: #fff; padding: 4px 14px; border-radius: 20px; font-size: 0.85rem; font-family: 'Fredoka', sans-serif; font-weight: 700; }
+        
+        .modal-q { font-size: 1.25rem; line-height: 1.5; margin-bottom: 20px; color: #f5f6fa; font-weight: 600; }
+        
+        /* Opsi Jawaban Clickable */
+        .options-list { margin-bottom: 20px; }
+        .option-btn { 
+            background: #485460; 
+            border: none; 
+            border-bottom: 4px solid #1e272e; 
+            padding: 14px 18px; 
+            border-radius: 12px; 
+            margin-bottom: 10px; 
+            font-size: 1.05rem; 
+            color: #fff; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: 0.15s; 
+            display: block; 
+            width: 100%; 
+            text-align: left; 
+            font-family: 'Fredoka', sans-serif;
+        }
+        .option-btn:hover { background: #00d2d3; color: #0f172a; border-bottom-color: #00a8a9; transform: translateX(5px); }
+        .option-btn.correct { background: #2ed573 !important; border-bottom-color: #20bf6b !important; color: #0d0f18 !important; }
+        .option-btn.wrong { background: #ff4757 !important; border-bottom-color: #c0392b !important; color: #fff !important; }
+
+        .result-feedback { font-family: 'Fredoka', sans-serif; font-size: 1.2rem; font-weight: 700; text-align: center; margin: 15px 0; display: none; }
+        .result-feedback.correct { color: #2ed573; }
+        .result-feedback.wrong { color: #ff4757; }
+
+        /* Area Pilihan Aksi (Tambah Poin Sendiri ATAU Serang Lawan) */
+        .tactical-box { display: none; background: #2d3436; border: 2px dashed #00d2d3; padding: 18px; border-radius: 16px; margin-top: 18px; text-align: center; }
+        .tactical-box h4 { margin: 0 0 12px; color: #ffd32a; font-family: 'Orbitron', sans-serif; font-size: 1rem; }
+        
+        .action-choice-group { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
+        .btn-choice { 
+            background: #3c40c6; 
+            color: #fff; 
+            border: none; 
+            border-bottom: 3px solid #1e272e; 
+            padding: 10px 18px; 
+            border-radius: 10px; 
+            font-family: 'Fredoka', sans-serif; 
+            font-weight: 700; 
+            font-size: 0.95rem; 
+            cursor: pointer; 
+            transition: 0.15s; 
+        }
+        .btn-choice:hover { background: #00d2d3; color: #0f172a; }
+
+        .attack-targets { display: none; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+        .btn-attack-target { background: #ff4757; color: #fff; border: none; border-bottom: 3px solid #c0392b; padding: 8px 14px; border-radius: 10px; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: 0.15s; }
+        .btn-attack-target:hover { background: #ffa801; border-bottom-color: #d63031; transform: scale(1.05); }
+
+        .self-add-targets { display: none; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+        .btn-self-target { background: #2ed573; color: #0d0f18; border: none; border-bottom: 3px solid #20bf6b; padding: 8px 14px; border-radius: 10px; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: 0.15s; }
+        .btn-self-target:hover { background: #00d2d3; transform: scale(1.05); }
+
+        .action-bar { display: flex; justify-content: flex-end; margin-top: 15px; border-top: 2px solid #485460; padding-top: 12px; }
+        .btn-close { background: #d63031; color: #fff; border: none; border-bottom: 3px solid #b2bec3; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 0.95rem; }
+        .btn-close:active { transform: translateY(2px); }
+    </style>
+</head>
+<body>
+
+    <h1>⚔️ CLASH OF SMART DEVICES ⚔️</h1>
+    <p class="subtitle">TACTICAL REVIEW BATTLE: SMART DEVICES & DIGITAL DEVICE</p>
+
+    <div class="top-bar">
+        <button class="btn-music" id="btnMusic" onclick="toggleMusic()">🔊 BACKSOUND: OFF</button>
+    </div>
+
+    <!-- Papan Skor 5 Desa dengan Nama yang Bisa Diganti -->
+    <div class="village-container">
+        <div class="card" id="card1">
+            <div class="village-icon">🏰</div>
+            <h3 class="village-name" id="vName1" onclick="editVillageName(1)" title="Klik untuk ubah nama desa">DESA 1 (KLIK)</h3>
+            <div class="hearts-box">
+                <span class="heart-icon" onclick="toggleHeart(this)">❤️</span>
+                <span class="heart-icon" onclick="toggleHeart(this)">❤️</span>
+                <span class="heart-icon" onclick="toggleHeart(this)">❤️</span>
+            </div>
+            <div class="elixir" id="e1">100</div>
+            <div class="btn-group">
+                <button class="btn-score" onclick="changeElixir(1, 20)">🔨 +20</button>
+                <button class="btn-score" onclick="changeElixir(1, -30)">⚔️ -30</button>
+            </div>
+        </div>
+        <div class="card" id="card2">
+            <div class="village-icon">🛡️</div>
+            <h3 class="village-name" id="vName2" onclick="editVillageName(2)" title="Klik untuk ubah nama desa">DESA 2 (KLIK)</h3>
+            <div class="hearts-box">
+                <span class="heart-icon" onclick="toggleHeart(this)">❤️</span>
+                <span class="heart-icon" onclick="toggleHeart(this)">❤️</span>
+                <span class="heart-icon" onclick="toggleHeart(this)">❤️</span>
+            </div>
+            <div class="elixir" id="e2">100</div>
+            <div class="btn-group">
+                <button class="btn-score" onclick="changeElixir(2, 20)">🔨 +20</button>
+                <button class="btn-score" onclick="changeElixir(2, -30)">⚔️ -30</button>
+            </div>
+        </div>
+        <div class="card" id="card3">
+            <div class="village-icon">⚡</div>
+            <h3 class="village-name" id="vName3" onclick="editVillageName(3)" title="Klik untuk ubah nama desa">DESA 3 (KLIK)</h3>
+            <div class="hearts-box">
+                <span class="heart-icon" onclick="toggleHeart(this)">❤️</span>
+                <span class="heart-icon" onclick="toggleHeart(this)">❤️</span>
+                <span class="heart-icon" onclick="toggleHeart(this)">❤️</span>
+            </div>
+            <div class="elixir" id="e3">100</div>
+            <div class="btn-group">
+                <button class="btn-score" onclick="changeElixir(3, 20)">🔨 +20</button>
+                <button class="btn-score" onclick="changeElixir(3, -30)">⚔️ -30</button>
+            </div>
+        </div>
+        <div class="card" id="card4">
+            <div class="village-icon">🔮</div>
+            <h3 class="village-name" id="vName4" onclick="editVillageName(4)" title="Klik untuk ubah nama desa">DESA 4 (KLIK)</h3>
+            <div class="hearts-box">
+                <span class="heart-icon" onclick="toggleHeart(this)">❤️</span>
+                <span class="heart-icon" onclick="toggleHeart(this)">❤️</span>
+                <span class="heart-icon" onclick="toggleHeart(this)">❤️</span>
+            </div>
+            <div class="elixir" id="e4">100</div>
+            <div class="btn-group">
+                <button class="btn-score" onclick="changeElixir(4, 20)">🔨 +20</button>
+                <button class="btn-score" onclick="changeElixir(4, -30)">⚔️ -30</button>
+            </div>
+        </div>
+        <div class="card" id="card5">
+            <div class="village-icon">🛸</div>
+            <h3 class="village-name" id="vName5" onclick="editVillageName(5)" title="Klik untuk ubah nama desa">DESA 5 (KLIK)</h3>
+            <div class="hearts-box">
+                <span class="heart-icon" onclick="toggleHeart(this)">❤️</span>
+                <span class="heart-icon" onclick="toggleHeart(this)">❤️</span>
+                <span class="heart-icon" onclick="toggleHeart(this)">❤️</span>
+            </div>
+            <div class="elixir" id="e5">100</div>
+            <div class="btn-group">
+                <button class="btn-score" onclick="changeElixir(5, 20)">🔨 +20</button>
+                <button class="btn-score" onclick="changeElixir(5, -30)">⚔️ -30</button>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="grid-title">PILIH SECTOR ZONA TANTANGAN (1 - 50)</h2>
+    <div class="grid-container" id="grid"></div>
+
+    <div class="modal" id="qModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="mHeader">SECTOR #</span>
+                <span class="badge" id="mType">PILIHAN GANDA</span>
+            </div>
+            <div class="modal-q" id="mQuestion">Pertanyaan...</div>
+            <div class="options-list" id="mOptions"></div>
+            
+            <div class="result-feedback" id="mFeedback"></div>
+
+            <!-- Box Taktis: Pilih Tambah Poin ATAU Serang Lawan -->
+            <div class="tactical-box" id="mTacticalBox">
+                <h4>✨ JAWABAN BENAR! PILIH TAKTIK KELOMPOKMU:</h4>
+                <div class="action-choice-group">
+                    <button class="btn-choice" onclick="showSelfAddMenu()">🔨 TAMBAH POIN DESA SENDIRI (+20)</button>
+                    <button class="btn-choice" style="background:#ff4757;" onclick="showAttackMenu()">💥 SERANG DESA LAWAN (-30)</button>
+                </div>
+
+                <!-- Sub-menu Tambah Poin -->
+                <div class="self-add-targets" id="mSelfMenu">
+                    <!-- Tombol target dinamis -->
+                </div>
+
+                <!-- Sub-menu Serang Lawan -->
+                <div class="attack-targets" id="mAttackMenu">
+                    <!-- Tombol target dinamis -->
+                </div>
+            </div>
+            
+            <div class="action-bar">
+                <button class="btn-close" onclick="closeModal()">TUTUP SOAL ✖</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sound Engine - Cartoon Audio Synthesizer
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let isMusicPlaying = false;
+        let musicInterval = null;
+
+        function toggleMusic() {
+            const bgm = document.getElementById('bgmAudio');
+            const btn = document.getElementById('btnMusic');
+
+            if (bgm.paused) {
+                bgm.play();
+                btn.innerText = "🔊 BACKSOUND: ON";
+                btn.style.background = "#0284c7";
+                btn.style.color = "#fff";
+            } else {
+                bgm.pause();
+                btn.innerText = "🔊 BACKSOUND: OFF";
+                btn.style.background = "#0f172a";
+                btn.style.color = "#38bdf8";
+            }
+        }
+
+        function startCartoonBGM() {
+            let noteIdx = 0;
+            const notes = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63];
+            musicInterval = setInterval(() => {
+                if(!isMusicPlaying) return;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(notes[noteIdx % notes.length], audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.35);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start();
+                noteIdx++;
+            }, 300);
+        }
+
+        function stopCartoonBGM() {
+            if (musicInterval) clearInterval(musicInterval);
+        }
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+            const now = audioCtx.currentTime;
+            
+            if (type === 'pop') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(800, now + 0.08);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.00001, now + 0.08);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(now);
+            } else if (type === 'correct') {
+                [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+                    gain.gain.setValueAtTime(0.12, now + idx * 0.06);
+                    gain.gain.exponentialRampToValueAtTime(0.00001, now + idx * 0.06 + 0.2);
+                    osc.connect(gain); gain.connect(audioCtx.destination);
+                    osc.start(now + idx * 0.06);
+                });
+            } else if (type === 'wrong') {
+                [300, 280, 260, 220].forEach((freq, idx) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+                    gain.gain.setValueAtTime(0.12, now + idx * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.00001, now + idx * 0.1 + 0.18);
+                    osc.connect(gain); gain.connect(audioCtx.destination);
+                    osc.start(now + idx * 0.1);
+                });
+            } else if (type === 'attack') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.exponentialRampToValueAtTime(40, now + 0.35);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.00001, now + 0.35);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(now);
+            }
+        }
+
+        // Fitur Ubah Nama Desa
+        function editVillageName(vNum) {
+            playSound('pop');
+            const el = document.getElementById(`vName${vNum}`);
+            const newName = prompt("Masukkan Nama Baru untuk Desa Ini:", el.innerText);
+            if (newName && newName.trim() !== "") {
+                el.innerText = newName.trim().toUpperCase();
+            }
+        }
+
+        // Toggle Hati
+        function toggleHeart(element) {
+            playSound('pop');
+            element.classList.toggle('lost');
+        }
+
+        // Database 50 Soal HOTS Hardcore
+        const questions = [
+            {type: "PILIHAN GANDA", q: "Smart Light teras menyala terus jam 12 siang. Hasil pemeriksaan: Lensa sensor cahaya LDR tertutup lumpur kering tebal. Mengapa Process memerintahkan Output lampu menyala?", opts: ["A. Chip mengalami kebocoran arus listrik", "B. Lumpur menghalangi intensitas cahaya, sehingga Input dibaca 'GELAP'", "C. Aplikasi smartphone secara otomatis mengunci fungsi sakelar", "D. Sensor cahaya rusak permanen dan harus diganti baru"], correctIndex: 1},
+            {type: "PILIHAN GANDA", q: "Smart Lamp tangga otomatis menyala saat ada orang melangkah di dekatnya. Jenis sensor apakah yang menjadi komponen Input utama?", opts: ["A. Sensor Suhu Udara (Thermocouple)", "B. Sensor Jarak / Gerak (PIR / Infra Merah)", "C. Sensor Sentuh Kapasitif", "D. Sensor Kelembapan Udara"], correctIndex: 1},
+            {type: "PILIHAN GANDA", q: "Lampu kamar tidur pintar otomatis meredup saat jam menunjukkan pukul 22.00 DAN tidak terdeteksi adanya gerakan. Komponen yang bertindak sebagai Process adalah...", opts: ["A. Sakelar manual di tembok", "B. Smart Hub / Microcontroller Chip Pintar", "C. Bohlam LED RGB", "D. Kabel jaringan arus AC"], correctIndex: 1},
+            {type: "PILIHAN GANDA", q: "Timbangan badan digital biasa di UKS menampilkan angka bobot di layarnya. Mengapa alat ini BUKAN Perangkat Pintar (Smart Device)?", opts: ["A. Tidak memiliki lampu backlight", "B. Bersifat pasif/kaku (bekerja hanya jika diinjak, tanpa internet & sensor pintar)", "C. Menggunakan tenaga baterai saku", "D. Angka di layarnya bukan bahasa biner"], correctIndex: 1},
+            {type: "PILIHAN GANDA", q: "Seseorang bertepuk tangan dua kali untuk menyalakan Smart Light ruang tamu. Dalam alur sistem IPO, peristiwa tepukan tangan bertindak sebagai...", opts: ["A. Output visual", "B. Input (Sinyal Gelombang Suara)", "C. Process pengolah data", "D. Microcontroller"], correctIndex: 1},
+            {type: "PILIHAN GANDA", q: "Smart Lamp garasi tidak menyala saat mobil masuk, padahal bohlamnya baru. Pintu garasi terbuka lebar. Analisis kegagalan alur yang paling akurat adalah...", opts: ["A. Lensa Sensor Gerak (Input) kotor/terhalang sehingga sinyal pemicu gagal dikirim ke Chip", "B. Warna bodi mobil terlalu gelap", "C. Tekanan angin pada ban mobil terlalu rendah", "D. Pintu garasi terbuat dari plat besi tebal"], correctIndex: 0},
+            {type: "PILIHAN GANDA", q: "Smart AC otomatis mati saat sensor membaca jendela kamar pintar terbuka. Alasan logika pemrosesan (Process) yang tepat adalah...", opts: ["A. Gas freon AC otomatis menguap habis", "B. Chip menerima sinyal jendela terbuka, lalu mematikan AC demi efisiensi energi", "C. Daya listrik rumah langsung padam seketika", "D. Remote kontrol AC mengalami kerusakan frekuensi"], correctIndex: 1},
+            {type: "PILIHAN GANDA", q: "Ketika telapak tangan menutupi sensor cahaya LDR pada Smart Lamp taman lalu lampu menyala, alur Input yang terjadi adalah...", opts: ["A. Telapak tangan menghalangi masuknya cahaya ke sensor", "B. Lampu LED menyala terang benderang", "C. Chip memproses algoritma biner", "D. Speaker alarm memancar suara"], correctIndex: 0},
+            {type: "PILIHAN GANDA", q: "Kabel penghubung sensor cahaya pada Smart Lamp terputus. Dampak langsung pada alur kerja IPO adalah...", opts: ["A. Lampu menyala dua kali lebih terang", "B. Sinyal pemicu Input tidak sampai ke Process, sehingga Output lampu tetap mati", "C. Chip pemroses langsung meledak", "D. Lampu terhubung ke koneksi internet tetangga"], correctIndex: 1},
+            {type: "PILIHAN GANDA", q: "Smart Lamp garasi otomatis menyala saat ada kucing melintas di depannya. Penyebab paling logis dari kejadian tersebut adalah...", opts: ["A. Sistem Smart Lamp mengalami kerusakan logika", "B. Sensor Jarak/Gerak membaca pergerakan fisik objek apa pun yang melintas di jangkauannya", "C. Kucing membawa pemancar frekuensi remote", "D. Terjadi kebocoran arus listrik pada lampu"], correctIndex: 1},
+
+            {type: "MULTI-SELECT", q: "Sebuah Smart Lamp tangga menyala merah dan membunyikan buzzer saat sensor suhu membaca panas kebakaran. Manakah pasangan Input & Output yang tepat?", opts: ["A. Sensor Suhu (Input) & Lampu Merah/Buzzer (Output)", "B. Kabel Listrik (Process) & Tembok (Input)", "C. Baterai (Output) & Sakelar (Process)", "D. Anak Tangga (Sensor) & Pintu (Output)"], correctIndex: 0},
+            {type: "MULTI-SELECT", q: "Manakah kombinasi ciri utama yang membedakan Perangkat Pintar dengan Perangkat Digital Biasa?", opts: ["A. Memiliki sensor digital, dapat bekerja otomatis, terhubung ke internet/jaringan", "B. Harus ditarik atau ditekan tombolnya manual setiap saat", "C. Murni bekerja tanpa menggunakan sumber energi listrik", "D. Hanya memiliki satu tugas tunggal tanpa opsi perbaruan"], correctIndex: 0},
+            {type: "MULTI-SELECT", q: "Manakah kumpulan komponen Smart Home yang seluruhnya bertindak sebagai perangkat Output?", opts: ["A. Bohlam LED RGB, Buzzer Alarm, Motor Penggerak Gorden", "B. Sensor Cahaya LDR, Sensor Jarak PIR, Sensor Suara", "C. Keyboard, Mouse, Microphone", "D. Chip CPU, Microcontroller, Processor"], correctIndex: 0},
+            {type: "MULTI-SELECT", q: "Manakah kelompok alat berikut yang seluruhnya menerapkan teknologi Perangkat Pintar di rumah?", opts: ["A. Smart Lamp otomatis, Smart Lock Pintu, Smart AC", "B. Sapu ijuk, Pengki plastik, Kemoceng", "C. Sakelar kaku manual, Colokan biasa", "D. Pintu kayu biasa, Kunci gembok besi"], correctIndex: 0},
+            {type: "MULTI-SELECT", q: "Kelompok komponen Input manual pada komputer biasa di rumah adalah...", opts: ["A. Keyboard, Mouse, Microphone", "B. Monitor, Printer, Speaker", "C. CPU, RAM, Harddisk", "D. Proyektor, Headphones, Buzzer"], correctIndex: 0},
+            {type: "MULTI-SELECT", q: "Jika sensor suara pada Smart Light kamar rusak total, apakah dampak alur IPO-nya?", opts: ["A. Suara tepukan (Input) gagal terdeteksi & Lampu (Output) tidak akan menyala", "B. Rumah langsung mengalami kebakaran", "C. Kaca bohlam lampu pecah seketika", "D. Smartphone terdeteksi hilang dari jaringan"], correctIndex: 0},
+            {type: "MULTI-SELECT", q: "Mengapa Smartwatch lebih pintar daripada Jam Dinding Digital biasa di rumah?", opts: ["A. Memiliki sensor kesehatan internal & Terhubung ke jaringan internet", "B. Jarum jamnya terbuat dari besi tempa", "C. Ukuran fisiknya sangat raksasa", "D. Tidak bisa menampilkan waktu sama sekali"], correctIndex: 0},
+            {type: "MULTI-SELECT", q: "Manakah gabungan alat rumah tangga berikut yang tergolong Perangkat Digital Biasa (Pasif & Kaku)?", opts: ["A. Kalkulator saku & Timbangan badan digital biasa", "B. Smart Lamp & Smart Lock Pintu", "C. Robot Vacuum Cleaner & Smart TV", "D. Smart Speaker & CCTV Pintar"], correctIndex: 0},
+            {type: "MULTI-SELECT", q: "Pada simulasi Smart Home berbasis Arduino, komponen manakah yang berfungsi sebagai Output?", opts: ["A. Lampu LED RGB & Buzzer Alarm Suara", "B. Sensor PIR & Sensor Cahaya LDR", "C. Kabel USB & Modul Wi-Fi", "D. Papan Biru Microcontroller Arduino"], correctIndex: 0},
+            {type: "MULTI-SELECT", q: "Apa peran mendasar Microcontroller / Chip Pintar pada ekosistem Smart Home?", opts: ["A. Menerima sinyal sensor & Mengambil keputusan tindakan otomatis", "B. Memutar musik pesta dengan suara nyaring", "C. Menampilkan gambar video resolusi 8K", "D. Menyimpan daya cadangan baterai"], correctIndex: 0},
+
+            {type: "BENAR / SALAH", q: "Smart Lamp teras selalu membutuhkan dorongan sakelar manual manusia agar bisa menyala malam hari.", opts: ["A. BENAR", "B. SALAH"], correctIndex: 1},
+            {type: "BENAR / SALAH", q: "Sensor Suara pada Smart Light bertindak sebagai perangkat Input penerima sinyal tepukan.", opts: ["A. BENAR", "B. SALAH"], correctIndex: 0},
+            {type: "BENAR / SALAH", q: "Bahasa biner yang digunakan Chip Smart Home dalam mengolah data terdiri dari angka 0, 1, dan 2.", opts: ["A. BENAR", "B. SALAH"], correctIndex: 1},
+            {type: "BENAR / SALAH", q: "Bohlam Lampu LED dan Speaker Alarm adalah contoh komponen pemroses data (Process).", opts: ["A. BENAR", "B. SALAH"], correctIndex: 1},
+            {type: "BENAR / SALAH", q: "Keran air otomatis di wastafel pintar bekerja menggunakan Sensor Jarak / Gerak.", opts: ["A. BENAR", "B. SALAH"], correctIndex: 0},
+            {type: "BENAR / SALAH", q: "Kalkulator digital saku termasuk Smart Device karena memiliki layar digital.", opts: ["A. BENAR", "B. SALAH"], correctIndex: 1},
+            {type: "BENAR / SALAH", q: "Komputer biasa memproses data dari interaksi perintah manual manusia (ketik/klik).", opts: ["A. BENAR", "B. SALAH"], correctIndex: 0},
+            {type: "BENAR / SALAH", q: "Sensor Cahaya LDR membaca nilai tingkat intensitas terang dan gelap ruangan.", opts: ["A. BENAR", "B. SALAH"], correctIndex: 0},
+            {type: "BENAR / SALAH", q: "Jika lensa sensor Smart CCTV tertutup cat tebal, Process akan tetap menerima gambar jernih.", opts: ["A. BENAR", "B. SALAH"], correctIndex: 1},
+            {type: "BENAR / SALAH", q: "Smart Lock pintu rumah membutuhkan sensor suhu udara untuk mendeteksi sidik jari.", opts: ["A. BENAR", "B. SALAH"], correctIndex: 1},
+
+            {type: "PILIHAN GANDA", q: "Layar Smart Thermostat rumah merespons usapan jari manusia tetapi tidak merespons kayu. Mengapa?", opts: ["A. Layar takut kayu", "B. Menggunakan sensor sentuh kapasitif yang merespons arus listrik tubuh", "C. Kayu terlalu berat", "D. Layar harus dicolok cas"], correctIndex: 1},
+            {type: "BENAR / SALAH", q: "Jam alarm meja biasa termasuk perangkat pintar karena bisa berbunyi nyaring.", opts: ["A. BENAR", "B. SALAH"], correctIndex: 1},
+            {type: "PILIHAN GANDA", q: "Tempat sampah pintar dapur membuka tutupnya saat ada orang mendekat lalu berbunyi 'Terima kasih!'. Komponen Output-nya adalah...", opts: ["A. Sensor Jarak", "B. Motor penggerak tutup & Speaker suara", "C. Tangan manusia", "D. Sampah dapur"], correctIndex: 1},
+            {type: "BENAR / SALAH", q: "Kipas angin pintar rumah otomatis menyala saat sensor membaca suhu mencapai 30°C.", opts: ["A. BENAR", "B. SALAH"], correctIndex: 0},
+            {type: "PILIHAN GANDA", q: "Urutan sistem kerja elektronik IPO yang benar pada Smart Home adalah...", opts: ["A. Process -> Input -> Output", "B. Input -> Process -> Output", "C. Output -> Input -> Process", "D. Process -> Output -> Input"], correctIndex: 1},
+            {type: "MULTI-SELECT", q: "3 Jenis sensor digital utama pada Smart Home adalah...", opts: ["A. Sensor Cahaya, Sensor Jarak, Sensor Suara", "B. Keyboard, Mouse, Monitor", "C. Baterai, Kabel, Stopkontak", "D. Layar, Casing, Tombol"], correctIndex: 0},
+            {type: "BENAR / SALAH", q: "Tempat sampah pedal kaki adalah contoh perangkat pintar modern di rumah.", opts: ["A. BENAR", "B. SALAH"], correctIndex: 1},
+            {type: "PILIHAN GANDA", q: "Komponen yang bertindak sebagai 'otak' pemroses data pada komputer rumah adalah...", opts: ["A. Keyboard", "B. Monitor", "C. CPU", "D. Mouse"], correctIndex: 2},
+            {type: "BENAR / SALAH", q: "Kamera Smart CCTV dapat dimanfaatkan sebagai sensor gerak dan sensor cahaya sekaligus.", opts: ["A. BENAR", "B. SALAH"], correctIndex: 0},
+            {type: "PILIHAN GANDA", q: "Sensor di bawah mouse komputer menggunakan jenis sensor...", opts: ["A. Sensor Suara", "B. Sensor Cahaya / Optik", "C. Sensor Suhu", "D. Sensor Gerak"], correctIndex: 1},
+            {type: "MULTI-SELECT", q: "Alat rumah mana saja yang tergolong Smart Device?", opts: ["A. Robot Vacuum Cleaner & Smart Light", "B. Kalkulator dapur & Timbangan UKS biasa", "C. Pensil & Buku tulis", "D. Gunting & Penggaris"], correctIndex: 0},
+            {type: "BENAR / SALAH", q: "Sensor bertindak seperti 'panca indra buatan' bagi sistem Smart Home.", opts: ["A. BENAR", "B. SALAH"], correctIndex: 0},
+            {type: "PILIHAN GANDA", q: "Saat kamu mengetik huruf di keyboard komputer, pemrosesan ubah kode biner terjadi di...", opts: ["A. Input", "B. Process", "C. Output", "D. Sensor"], correctIndex: 1},
+            {type: "BENAR / SALAH", q: "Microcontroller Chip Pintar berfungsi mengolah sinyal sensor dan memutuskan aksi otomatis.", opts: ["A. BENAR", "B. SALAH"], correctIndex: 0},
+            {type: "PILIHAN GANDA", q: "Rancangan tempat makan kucing pintar yang otomatis mendeteksi kedatangan kucing menggunakan...", opts: ["A. Sensor Suhu", "B. Sensor Jarak / Gerak", "C. Sensor Air", "D. Sensor Sentuh"], correctIndex: 1},
+            {type: "MULTI-SELECT", q: "Manakah penyebab umum Smart Light teras rumah tidak merespons dengan benar?", opts: ["A. Lensa sensor terhalang kotoran & Kabel sinyal terputus", "B. Warna casing bohlam hitam", "C. Halaman rumah terlalu bersih", "D. Baterai baru diganti"], correctIndex: 0},
+            {type: "BENAR / SALAH", q: "Smartwatch yang putus internet langsung berubah menjadi jam analog jarum besi.", opts: ["A. BENAR", "B. SALAH"], correctIndex: 1},
+            {type: "PILIHAN GANDA", q: "Sensor yang digunakan untuk mendeteksi tepukan tangan pada Smart Light adalah...", opts: ["A. Sensor Cahaya", "B. Sensor Suara", "C. Sensor Jarak", "D. Sensor Suhu"], correctIndex: 1},
+            {type: "BENAR / SALAH", q: "Perangkat digital biasa umumnya tidak memiliki koneksi internet dan hanya 1 tugas kaku.", opts: ["A. BENAR", "B. SALAH"], correctIndex: 0},
+            {type: "PILIHAN GANDA", q: "Sistem yang menerima sinyal, mengolah, lalu mengeluarkan aksi nyata disebut alur...", opts: ["A. IPO (Input - Process - Output)", "B. API", "C. CPU", "D. USB"], correctIndex: 0}
+        ];
+
+        let currentActiveBtn = null;
+
+        // Render 50 Tombol Grid
+        const gridContainer = document.getElementById('grid');
+        questions.forEach((item, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'q-btn';
+            btn.innerText = index + 1;
+            btn.onclick = () => openQuestion(index, btn);
+            gridContainer.appendChild(btn);
+        });
+
+        // Buka Pop-up Soal
+        function openQuestion(index, btnElement) {
+            playSound('pop');
+            currentActiveBtn = btnElement;
+            const qData = questions[index];
+            
+            document.getElementById('mHeader').innerText = `SECTOR TANTANGAN #${index + 1}`;
+            document.getElementById('mType').innerText = qData.type;
+            document.getElementById('mQuestion').innerText = qData.q;
+            
+            const feedback = document.getElementById('mFeedback');
+            feedback.style.display = 'none';
+            feedback.className = 'result-feedback';
+
+            document.getElementById('mTacticalBox').style.display = 'none';
+            document.getElementById('mSelfMenu').style.display = 'none';
+            document.getElementById('mAttackMenu').style.display = 'none';
+
+            // Render Opsi Clickable
+            const optsContainer = document.getElementById('mOptions');
+            optsContainer.innerHTML = '';
+            qData.opts.forEach((opt, optIdx) => {
+                const optBtn = document.createElement('button');
+                optBtn.className = 'option-btn';
+                optBtn.innerText = opt;
+                optBtn.onclick = () => checkAnswer(optIdx, qData.correctIndex, optBtn);
+                optsContainer.appendChild(optBtn);
+            });
+
+            document.getElementById('qModal').style.display = 'flex';
+        }
+
+        // Cek Jawaban Langsung
+        function checkAnswer(selectedIndex, correctIndex, btnElement) {
+            const allOpts = document.querySelectorAll('.option-btn');
+            allOpts.forEach(btn => btn.disabled = true);
+
+            const feedback = document.getElementById('mFeedback');
+            feedback.style.display = 'block';
+
+            if (selectedIndex === correctIndex) {
+                playSound('correct');
+                btnElement.classList.add('correct');
+                feedback.innerText = '✨ JAWABAN BENAR! PILIH STRATEGI DI BAWAH! ✨';
+                feedback.classList.add('correct');
+                document.getElementById('mTacticalBox').style.display = 'block';
+            } else {
+                playSound('wrong');
+                btnElement.classList.add('wrong');
+                allOpts[correctIndex].classList.add('correct');
+                feedback.innerText = '❌ JAWABAN SALAH! KESEMPATAN Aksi HANGUS! ❌';
+                feedback.classList.add('wrong');
+            }
+        }
+
+        // Render Sub-menu Tambah Poin Sendiri
+        function showSelfAddMenu() {
+            playSound('pop');
+            document.getElementById('mAttackMenu').style.display = 'none';
+            const container = document.getElementById('mSelfMenu');
+            container.innerHTML = '';
+            
+            for (let i = 1; i <= 5; i++) {
+                const vName = document.getElementById(`vName${i}`).innerText;
+                const btn = document.createElement('button');
+                btn.className = 'btn-self-target';
+                btn.innerText = `🔨 ${vName} (+20)`;
+                btn.onclick = () => selfAddVillage(i);
+                container.appendChild(btn);
+            }
+            container.style.display = 'flex';
+        }
+
+        // Render Sub-menu Serang Lawan
+        function showAttackMenu() {
+            playSound('pop');
+            document.getElementById('mSelfMenu').style.display = 'none';
+            const container = document.getElementById('mAttackMenu');
+            container.innerHTML = '';
+            
+            for (let i = 1; i <= 5; i++) {
+                const vName = document.getElementById(`vName${i}`).innerText;
+                const btn = document.createElement('button');
+                btn.className = 'btn-attack-target';
+                btn.innerText = `💥 SERANG ${vName} (-30)`;
+                btn.onclick = () => attackVillage(i);
+                container.appendChild(btn);
+            }
+            container.style.display = 'flex';
+        }
+
+        // Eksekusi Tambah Poin
+        function selfAddVillage(targetNum) {
+            playSound('correct');
+            changeElixir(targetNum, 20);
+            const vName = document.getElementById(`vName${targetNum}`).innerText;
+            alert(`🔨 NAIK POIN! ${vName} BERHASIL MENAMBAH +20 ELIXIR!`);
+            closeModal();
+        }
+
+        // Eksekusi Serang Lawan
+        function attackVillage(targetNum) {
+            playSound('attack');
+            changeElixir(targetNum, -30);
+            const vName = document.getElementById(`vName${targetNum}`).innerText;
+            alert(`💥 SERANGAN BERHASIL! ${vName} BERKURANG -30 ELIXIR!`);
+            closeModal();
+        }
+
+        // Tutup Modal
+        function closeModal() {
+            playSound('pop');
+            document.getElementById('qModal').style.display = 'none';
+            if(currentActiveBtn) {
+                currentActiveBtn.classList.add('used');
+            }
+        }
+
+        // Ubah Skor Elixir Desa
+        function changeElixir(villageNum, amount) {
+            playSound('pop');
+            const el = document.getElementById(`e${villageNum}`);
+            let current = parseInt(el.innerText);
+            el.innerText = Math.max(0, current + amount);
+
+            const card = document.getElementById(`card${villageNum}`);
+            card.classList.add('active');
+            setTimeout(() => card.classList.remove('active'), 500);
+        }
+    </script>
+</body>
+<audio id="bgmAudio" loop src="cartunSound.mp3"></audio>
+</html>
