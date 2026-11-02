@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberGuard Quest v13 - Full Interactive Detective Edition (15 Misi Kelas 5 SD)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b1329;
+            color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 14px;
+        }
+
+        .main-container { width: 100%; max-width: 880px; display: flex; flex-direction: column; gap: 18px; }
+
+        /* Header Card */
+        .header-card {
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 20px;
+            padding: 18px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .title-area h1 { font-family: 'Space Grotesk', sans-serif; font-size: 1.35rem; color: #38bdf8; font-weight: 800; }
+        .title-area p { font-size: 0.82rem; color: #94a3b8; margin-top: 2px; }
+
+        .stats-group { display: flex; gap: 12px; }
+        .stat-badge {
+            background: #0f172a;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .stat-badge span { color: #38bdf8; font-weight: 800; }
+
+        /* Mission Container Card */
+        .mission-card {
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+        }
+
+        .mission-tag {
+            display: inline-flex;
+            gap: 6px;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #38bdf8;
+            padding: 5px 14px;
+            border-radius: 30px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+
+        .mission-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.3rem; font-weight: 700; color: #f8fafc; margin-bottom: 12px; }
+        .mission-desc { font-size: 0.92rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 18px; }
+
+        .case-box {
+            background: #091322;
+            border-left: 4px solid #38bdf8;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            font-size: 0.88rem;
+            line-height: 1.6;
+            color: #e2e8f0;
+        }
+
+        .terminal-box {
+            background: #020617;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 14px;
+            font-family: monospace;
+            color: #38bdf8;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            white-space: pre-wrap;
+        }
+
+        .cipher-display {
+            background: #091322;
+            border: 2px dashed #0284c7;
+            padding: 16px;
+            border-radius: 14px;
+            text-align: center;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.25rem;
+            color: #fbbf24;
+            letter-spacing: 3px;
+            margin-bottom: 16px;
+        }
+
+        .pass-wrapper { position: relative; width: 100%; margin-bottom: 12px; }
+        .input-text {
+            width: 100%;
+            background: #0f172a;
+            border: 1.5px solid #334155;
+            border-radius: 14px;
+            padding: 12px 16px;
+            color: #f8fafc;
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .input-text:focus { border-color: #38bdf8; }
+        .eye-icon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.2rem; user-select: none; }
+
+        .btn-action {
+            background: #0284c7;
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 8px;
+        }
+        .btn-action:hover { background: #0369a1; transform: translateY(-2px); }
+
+        .ws-grid { display: grid; grid-template-columns: repeat(10, 36px); gap: 6px; justify-content: center; margin: 18px 0; }
+        .ws-cell {
+            width: 36px; height: 36px; background: #0f172a; border: 1px solid #334155; color: #38bdf8;
+            display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer;
+            font-weight: 700; font-size: 0.92rem; user-select: none;
+        }
+        .ws-cell.selected { background: #0284c7; color: #ffffff; border-color: #38bdf8; }
+
+        .feedback-banner {
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            display: none;
+            line-height: 1.4;
+        }
+        .feedback-success { background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #6ee7b7; }
+        .feedback-error { background: rgba(244, 63, 94, 0.15); border: 1px solid #f43f5e; color: #fda4af; }
+
+        /* Report & Certificate Format */
+        .cert-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 2px solid #38bdf8; border-radius: 24px; padding: 36px 24px; text-align: center; }
+        .cert-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.7rem; color: #38bdf8; margin-bottom: 6px; }
+        
+        .report-grid {
+            text-align: left;
+            background: #091322;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            max-height: 420px;
+            overflow-y: auto;
+        }
+        .report-item {
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        .report-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .report-item strong { color: #38bdf8; }
+        .report-val { color: #fbbf24; }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <div class="header-card">
+            <div class="title-area">
+                <h1>🕵️ CYBERGUARD QUEST v13</h1>
+                <p>Detektif Kasus Keamanan Digital - Full Interactive Edition (Kelas 5 SD)</p>
+            </div>
+            <div class="stats-group">
+                <div class="stat-badge">🎯 MISI: <span id="txtMission">1 / 15</span></div>
+                <div class="stat-badge">⚡ SKOR: <span id="txtScore">0</span></div>
+                <div class="stat-badge">🏆 BADGE: <span id="txtBadge">0</span></div>
+            </div>
+        </div>
+
+        <div class="mission-card" id="cardArea"></div>
+    </div>
+
+    <script>
+        let currentMission = 1;
+        let score = 0;
+        let badges = 0;
+        let audioCtx = null;
+        let answersLog = {};
+
+        function playSound(type) {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                if (type === 'correct') {
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.exponentialRampToValueAtTime(880, now + 0.2);
+                    gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+                } else if (type === 'wrong') {
+                    osc.type = 'triangle'; osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.linearRampToValueAtTime(110, now + 0.25);
+                    gain.gain.setValueAtTime(0.12, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+                }
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(now);
+            } catch(e) {}
+        }
+
+        function updateStats() {
+            document.getElementById('txtMission').innerText = (currentMission > 15 ? 15 : currentMission) + ' / 15';
+            document.getElementById('txtScore').innerText = score;
+            document.getElementById('txtBadge').innerText = badges;
+        }
+
+        function showFeedback(text, isError) {
+            const fb = document.getElementById('feedbackArea');
+            if (!fb) return;
+            fb.className = 'feedback-banner ' + (isError ? 'feedback-error' : 'feedback-success');
+            fb.innerHTML = text;
+            fb.style.display = 'block';
+        }
+
+        function nextMission() {
+            currentMission++;
+            setTimeout(() => {
+                renderMission();
+            }, 700);
+        }
+
+        function renderMission() {
+            updateStats();
+            const card = document.getElementById('cardArea');
+
+            if (currentMission === 1) {
+                card.innerHTML = `
+                    <div class="mission-tag">🔍 MISI 1: FORENSIK LINK PALSU</div>
+                    <h2 class="mission-title">Studi Kasus 1: Membedah Pesan Undian Game</h2>
+                    <div id="feedbackArea" class="feedback-banner"></div>
+                    
+                    <div class="case-box">
+                        <strong>📌 STUDI KASUS PANJANG:</strong><br>
+                        Budi sedang bermain game kesukaannya di tablet. Tiba-tiba masuk pesan WhatsApp dari nomor asing yang memakai foto profil resmi pengembang game. Pesan tersebut berbunyi: <br>
+                        <em>"Selamat kepada Budi! Akun kamu terpilih memenangkan 5.000 Roblox / Diamond secara gratis. Segera klaim sebelum hangus dalam 15 menit melalui tautan resmi kami: <strong>www.roblox-hadiah-gratisan-klaim-sekarang.net/login</strong>"</em>
+                    </div>
+
+                    <p class="mission-desc"><strong>KEGIATAN DETEKTIF:</strong> Bedah tautan di atas! Ketikkan nama alamat web (domain) palsu yang digunakan oleh penipu tersebut untuk mencuri akun Budi:</p>
+                    <input type="text" id="inM1" class="input-text" style="max-width:450px; margin-bottom:12px;" placeholder="Ketik nama domain palsu di sini...">
+                    <br>
+                    <button class="btn-action" onclick="checkM1()">EKSEKUSI ANALISIS FORENSIK 🔍</button>
+                `;
+            } else if (currentMission === 2) {
+                card.innerHTML = `
+                    <div class="mission-tag">💬 MISI 2: STRANGER DANGER & OTP</div>
+                    <h2 class="mission-title">Studi Kasus 2: Penyusup Kode OTP di Chat Room Game</h2>
+                    <div id="feedbackArea" class="feedback-banner"></div>
+                    
+                    <div class="case-box">
+                        <strong>📌 STUDI KASUS PANJANG:</strong><br>
+                        Saat berada di lobby pertarungan game online, seorang pemain asing dengan nama akun <em>"Admin_Siber_Resmi"</em> mendatangi karaktermu dan berkata melalui fitur obrolan privat: <br>
+                        <em>"Halo! Sistem kami mendeteksi bahwa akunmu akan diblokir permanen karena dicurigai mengunduh cheat. Untuk membatalkan pemblokiran ini, sebutkan 6 digit kode OTP SMS yang baru saja masuk ke nomor HP-mu sekarang juga!"</em>
+                    </div>
+
+                    <p class="mission-desc"><strong>KEGIATAN DETEKTIF:</strong> Tuliskan tindakan tegasmu (minimal 6 kata)! Apa yang harus kamu lakukan dan mengapa kamu dilarang memberikan kode OTP tersebut?</p>
+                    <textarea id="inM2" class="input-text" style="height:85px; margin-bottom:12px;" placeholder="Tuliskan tindakan dan alasanmu di sini..."></textarea>
+                    <br>
+                    <button class="btn-action" onclick="checkM2()">KIRIM RESPON LINDUNGI AKUN 🛡️</button>
+                `;
+            } else if (currentMission === 3) {
+                card.innerHTML = `
+                    <div class="mission-tag">🔐 MISI 3: ENKRIPSI 1 (CAESAR CIPHER -2)</div>
+                    <h2 class="mission-title">Studi Kasus 3: Membuka Dokumen Rahasia Sekolah</h2>
+                    <div id="feedbackArea" class="feedback-banner"></div>
+                    
+                    <div class="case-box">
+                        <strong>📌 STUDI KASUS PANJANG:</strong><br>
+                        Tim keamanan komputer sekolah mengunci file rahasia berisi password database server dengan metode kriptografi <strong>GESER MUNDUR 2 HURUF</strong> pada urutan alfabet. <br>
+                        (Aturan Pergeseran: C &rarr; A, D &rarr; B, E &rarr; C, A &rarr; Y, B &rarr; Z, M &rarr; K, T &rarr; R).
+                    </div>
+
+                    <div class="cipher-display">KATA TERKUNCI: <strong>C A M A T</strong> &nbsp;&rarr; GESER MUNDUR 2 HURUF</div>
+                    
+                    <p class="mission-desc"><strong>KEGIATAN DETEKTIF:</strong> Hitung dan ketikkan kata hasil dekripsi asli dari kata <strong>"CAMAT"</strong> setelah digeser mundur 2 langkah!</p>
+                    <input type="text" id="inM3" class="input-text" style="max-width:320px; margin-bottom:12px;" placeholder="Ketik hasil dekripsi (misal: aykyr)...">
+                    <br>
+                    <button class="btn-action" onclick="checkM3()">DEKRIPSI KODE RAHASIA 🔓</button>
+                `;
+            } else if (currentMission === 4) {
+                card.innerHTML = `
+                    <div class="mission-tag">🔐 MISI 4: ENKRIPSI 2 (REVERSE CIPHER)</div>
+                    <h2 class="mission-title">Studi Kasus 4: Pesan Rahasia Terbalik</h2>
+                    <div id="feedbackArea" class="feedback-banner"></div>
+                    
+                    <div class="case-box">
+                        <strong>📌 STUDI KASUS PANJANG:</strong><br>
+                        Penjahat siber menyembunyikan kata penting pertahanan digital dengan cara membalikkan seluruh urutan hurufnya dari belakang ke depan agar tidak terbaca oleh detektif biasa.
+                    </div>
+
+                    <div class="cipher-display">SANDI TERBALIK: <strong>I S A V I R P</strong></div>
+                    
+                    <p class="mission-desc"><strong>KEGIATAN DETEKTIF:</strong> Susun dan ketikkan kembali kata keamanan tersebut dari urutan paling belakang ke paling depan!</p>
+                    <input type="text" id="inM4" class="input-text" style="max-width:320px; margin-bottom:12px;" placeholder="Ketik kata yang benar (misal: privasi)...">
+                    <br>
+                    <button class="btn-action" onclick="checkM4()">DEKRIPSI TERBALIK 🔓</button>
+                `;
+            } else if (currentMission === 5) {
+                card.innerHTML = `
+                    <div class="mission-tag">🛡️ MISI 5: SIMULATOR KATA SANDI</div>
+                    <h2 class="mission-title">Studi Kasus 5: Meracik Kata Sandi Benteng</h2>
+                    <div id="feedbackArea" class="feedback-banner"></div>
+                    
+                    <div class="case-box">
+                        <strong>📌 SYARAT BENTENG KELAS MILITER:</strong><br>
+                        - Minimal 8 karakter<br>
+                        - Wajib ada Huruf Besar (A-Z) & Huruf Kecil (a-z)<br>
+                        - Wajib ada Angka (0-9)<br>
+                        - Wajib ada Simbol Khusus (@, #, $, %, !)
+                    </div>
+
+                    <p class="mission-desc"><strong>KEGIATAN DETEKTIF:</strong> Racik secara langsung kata sandi kuat milikmu pada kolom di bawah ini hingga indikator meteran menunjukkan warna hijau!</p>
+
+                    <div class="pass-wrapper">
+                        <input type="password" id="inM5Pass" class="input-text" placeholder="Racik kata sandi benteng di sini..." oninput="checkPassStrength()">
+                        <span class="eye-icon" onclick="togglePass()">👁️</span>
+                    </div>
+                    <div style="height:10px; background:#020617; border-radius:6px; overflow:hidden; margin:12px 0;"><div id="passMeter" style="height:100%; width:0%; transition:0.3s;"></div></div>
+                    <p id="passStatus" style="font-weight:bold; color:#ef4444; font-size:0.88rem; margin-bottom:14px;">Status Sandi: Belum Kuat</p>
+                    
+                    <button class="btn-action" id="btnM5Next" style="display:none;" onclick="finishM5()">VERIFIKASI BENTENG & LANJUT ➔</button>
+                `;
+            } else if (currentMission === 6) {
+                card.innerHTML = `
+                    <div class="mission-tag">📧 MISI 6: FORENSIK EMAIL HEADER</div>
+                    <h2 class="mission-title">Studi Kasus 6: Inspeksi Email Spoofing Sekolah</h2>
+                    <div id="feedbackArea" class="feedback-banner"></div>
+                    
+                    <div class="case-box">
+                        <strong>📌 STUDI KASUS PANJANG & RAW LOG:</strong><br>
+                        Kepala sekolah menerima email berlabel "Pemberitahuan Ujian". Namun setelah diperiksa catatan teknis (raw header)-nya:<br>
+                        <div class="terminal-box">Received: from mail-server.botnet-attacker.tk (IP: 185.220.101.5)
+From: "Kepala Sekolah" &lt;admin-palsu@accounts-update-school-id.tk&gt;
+Reply-To: harvest-passwords@phish-server.xyz
+SPF-Check: FAIL | DKIM-Signature: FAIL</div>
+                    </div>
+
+                    <p class="mission-desc"><strong>KEGIATAN DETEKTIF:</strong> Berdasarkan bukti forensik log di atas, ketikkan status keaslian email tersebut di bawah ini (Ketik: <strong>SPOOFING</strong> atau <strong>PHISHING</strong>):</p>
+                    <input type="text" id="inM6" class="input-text" style="max-width:320px; margin-bottom:12px;" placeholder="Ketik status email (SPOOFING / PHISHING)...">
+                    <br>
+                    <button class="btn-action" onclick="checkM6()">VERIFIKASI LOG HEADER 🔍</button>
+                `;
+            } else if (currentMission === 7) {
+                card.innerHTML = `
+                    <div class="mission-tag">📦 MISI 7: INFILTRASI MALWARE APK</div>
+                    <h2 class="mission-title">Studi Kasus 7: Jebakan SMS Paket Kurir</h2>
+                    <div id="feedbackArea" class="feedback-banner"></div>
+                    
+                    <div class="case-box">
+                        <strong>📌 STUDI KASUS PANJANG:</strong><br>
+                        Siti mendapatkan pesan SMS: <em>"Paket Anda tertahan di kurir. Klik tautan ini untuk menginstal file <strong>Cek_Paket.apk</strong>"</em>. Tanpa curiga Siti menginstalnya. Sejam kemudian, saldo e-wallet milik orang tua Siti terkuras habis secara misterius meskipun HP tidak dipegang orang lain.
+                    </div>
+
+                    <p class="mission-desc"><strong>KEGIATAN DETEKTIF:</strong> Jelaskan secara teknis (minimal 8 kata) mengapa mengunduh file <strong>.apk</strong> palsu dari SMS dapat membuat uang di e-wallet hilang!</p>
+                    <textarea id="inM7" class="input-text" style="height:85px; margin-bottom:12px;" placeholder="Tuliskan analisis teknis malware di sini..."></textarea>
+                    <br>
+                    <button class="btn-action" onclick="checkM7()">KIRIM HASIL ANALISIS MALWARE 📝</button>
+                `;
+            } else if (currentMission === 8) {
+                card.innerHTML = `
+                    <div class="mission-tag">📶 MISI 8: KEAMANAN WI-FI PUBLIK</div>
+                    <h2 class="mission-title">Studi Kasus 8: Penyadapan Wi-Fi Gratis Taman Kota</h2>
+                    <div id="feedbackArea" class="feedback-banner"></div>
+                    
+                    <div class="case-box">
+                        <strong>📌 STUDI KASUS PANJANG:</strong><br>
+                        Edo sedang mengerjakan tugas sekolah di taman kota dan melihat jaringan Wi-Fi bernama <em>"WiFi_Gratis_Tanpa_Password"</em>. Setelah tersambung, Edo membuka akun media sosialnya. Malam harinya, akun Edo diambil alih dan digunakan untuk menyebar pesan hoaks.
+                    </div>
+
+                    <p class="mission-desc"><strong>KEGIATAN DETEKTIF:</strong> Tuliskan analisis teknis (minimal 8 kata): Mengapa terhubung ke Wi-Fi terbuka tanpa kata sandi/enkripsi memudahkan peretas mengintip data kita?</p>
+                    <textarea id="inM8" class="input-text" style="height:85px; margin-bottom:12px;" placeholder="Tuliskan analisis bahaya Wi-Fi gratis di sini..."></textarea>
+                    <br>
+                    <button class="btn-action" onclick="checkM8()">KIRIM HASIL ANALISIS JARINGAN 📝</button>
+                `;
+            } else if (currentMission === 9) {
+                card.innerHTML = `
+                    <div class="mission-tag">📱 MISI 9: JEBAKAN QUISHING (QR CODE)</div>
+                    <h2 class="mission-title">Studi Kasus 9: QR Code Palsu Kantin Sekolah</h2>
+                    <div id="feedbackArea" class="feedback-banner"></div>
+                    
+                    <div class="case-box">
+                        <strong>📌 STUDI KASUS PANJANG:</strong><br>
+                        Seorang penjahat menempelkan stiker QR Code palsu di atas QR Code resmi pembayaran kantin. Saat siswa memindai QR Code tersebut, layar HP mengarahkan ke link: <br>
+                        <code>https://sekolah-sch-id.pay-auth-login.tk/checkout</code>
+                    </div>
+
+                    <p class="mission-desc"><strong>KEGIATAN DETEKTIF:</strong> Perhatikan domain asli penipu di akhir alamat web tersebut! Ketikkan ekstensi domain utama (.tk) yang digunakan oleh penipu:</p>
+                    <input type="text" id="inM9" class="input-text" style="max-width:320px; margin-bottom:12px;" placeholder="Ketik ekstensi domain palsu (misal: .tk)...">
+                    <br>
+                    <button class="btn-action" onclick="checkM9()">VERIFIKASI DOMAIN QUISHING 🔍</button>
+                `;
+            } else if (currentMission === 10) {
+                card.innerHTML = `
+                    <div class="mission-tag">🧩 MISI 10: MATRIKS KATA SIBER</div>
+                    <h2 class="mission-title">Studi Kasus 10: Pencarian Istilah Pertahanan Digital</h2>
+                    <div id="feedbackArea" class="feedback-banner"></div>
+                    
+                    <p class="mission-desc">Klik huruf-huruf pada matriks kotak di bawah untuk menemukan 3 kata kunci pertahanan: <strong>[PRIVASI]</strong>, <strong>[SANDI]</strong>, dan <strong>[AMAN]</strong>!</p>
+                    
+                    <div class="ws-grid" id="gridWs"></div>
+                    <div id="resWs" style="text-align:center; font-weight:700; color:#38bdf8; margin-top:10px;"></div>
+                `;
+                buildWsGrid();
+            } else if (currentMission === 11) {
+                card.innerHTML = `
+                    <div class="mission-tag">🧠 MISI 11: ANALISIS KRITIS HOTS</div>
+                    <h2 class="mission-title">Studi Kasus 11: Penyebaran Foto Kartu Pelajar</h2>
+                    <div id="feedbackArea" class="feedback-banner"></div>
+                    
+                    <div class="case-box">
+                        <strong>📌 STUDI KASUS PANJANG:</strong><br>
+                        Seorang siswa mengunggah foto Kartu Pelajar milik temannya ke cerita Instagram. Di dalam foto tersebut terlihat jelas Alamat Rumah, Nomor NIK, dan Tanggal Lahir temannya.
+                    </div>
+
+                    <p class="mission-desc"><strong>KEGIATAN DETEKTIF:</strong> Tuliskan analisis kritis pendapatmu (minimal 8 kata): Mengapa menyebarkan identitas pribadi teman di sosial media sangat berbahaya?</p>
+                    <textarea id="inM11" class="input-text" style="height:85px; margin-bottom:12px;" placeholder="Tuliskan analisis kritis di sini..."></textarea>
+                    <br>
+                    <button class="btn-action" onclick="checkM11()">KIRIM ANALISIS KRITIS 📝</button>
+                `;
+            } else if (currentMission === 12) {
+                card.innerHTML = `
+                    <div class="mission-tag">🔎 MISI 12: IDENTIFIKASI MODUS PENIPUAN</div>
+                    <h2 class="mission-title">Studi Kasus 12: Penipuan Top-Up Diamond Murah</h2>
+                    <div id="feedbackArea" class="feedback-banner"></div>
+                    
+                    <div class="case-box">
+                        <strong>📌 STUDI KASUS PANJANG:</strong><br>
+                        Ani melihat akun Instagram promo <em>Top-Up 5.000 Diamond Game hanya Rp 10.000</em> (harga resmi Rp 500.000). Ani mentransfer tabungannya, lalu nomornya diblokir dan Diamond tidak pernah masuk.
+                    </div>
+
+                    <p class="mission-desc"><strong>KEGIATAN DETEKTIF:</strong> Ketikkan kata kunci utama dari peristiwa kejahatan siber yang dialami Ani (Ketik: <strong>PENIPUAN</strong>):</p>
+                    <input type="text" id="inM12" class="input-text" style="max-width:320px; margin-bottom:12px;" placeholder="Ketik jenis kejahatan (PENIPUAN)...">
+                    <br>
+                    <button class="btn-action" onclick="checkM12()">VERIFIKASI MODUS 🔍</button>
+                `;
+            } else if (currentMission === 13) {
+                card.innerHTML = `
+                    <div class="mission-tag">📍 MISI 13: EVALUASI GEOLOCATION</div>
+                    <h2 class="mission-title">Studi Kasus 13: Bahaya Fitur Live Location</h2>
+                    <div id="feedbackArea" class="feedback-banner"></div>
+                    
+                    <div class="case-box">
+                        <strong>📌 STUDI KASUS PANJANG:</strong><br>
+                        Deni mengunggah status medsos: <em>"Lagi sendirian di Kafe X sampai malam nih!"</em> sambil menyalakan fitur Live Location publik. Tidak lama kemudian, seseorang yang tak dikenal mendatangi lokasi Deni secara misterius.
+                    </div>
+
+                    <p class="mission-desc"><strong>KEGIATAN DETEKTIF:</strong> Tuliskan analisis teknis (minimal 8 kata) mengapa membagikan lokasi fisik terkini secara publik sangat membahayakan keselamatanmu!</p>
+                    <textarea id="inM13" class="input-text" style="height:85px; margin-bottom:12px;" placeholder="Tuliskan analisis bahaya lokasi fisik di sini..."></textarea>
+                    <br>
+                    <button class="btn-action" onclick="checkM13()">KIRIM ANALISIS GEOLOCATION 📝</button>
+                `;
+            } else if (currentMission === 14) {
+                card.innerHTML = `
+                    <div class="mission-tag">🚨 MISI 14: ANALISIS PEMBAJAKAN AKUN</div>
+                    <h2 class="mission-title">Studi Kasus 14: Akun Medsos Rani Diretas</h2>
+                    <div id="feedbackArea" class="feedback-banner"></div>
+                    
+                    <div class="case-box">
+                        <strong>📌 STUDI KASUS PANJANG:</strong><br>
+                        Rani kaget karena akun grup sekolahnya tiba-tiba mengirimkan pesan-pesan kasar kepada teman-temannya. Padahal Rani tidak pernah mengetik pesan tersebut dan ternyata password akunnya baru saja dibajak.
+                    </div>
+
+                    <p class="mission-desc"><strong>KEGIATAN DETEKTIF:</strong> Jelaskan 3 langkah darurat (minimal 8 kata) yang harus diambil Rani untuk mengamankan akun dan memulihkan nama baiknya!</p>
+                    <textarea id="inM14" class="input-text" style="height:85px; margin-bottom:12px;" placeholder="Tuliskan langkah pemulihan akun di sini..."></textarea>
+                    <br>
+                    <button class="btn-action" onclick="checkM14()">KIRIM PLAN PEMULIHAN AKUN 🛠️</button>
+                `;
+            } else if (currentMission === 15) {
+                card.innerHTML = `
+                    <div class="mission-tag">📜 MISI 15: ATURAN ETIKA DIGITAL</div>
+                    <h2 class="mission-title">Studi Kasus 15: Menyusun 5 Aturan Emas Digital</h2>
+                    <div id="feedbackArea" class="feedback-banner"></div>
+                    
+                    <div class="case-box">
+                        <strong>📌 STUDI KASUS PANJANG:</strong><br>
+                        Sebagai Detektif Siber lulusan pelatihan, kamu diminta menyusun komitmen etika keselamatan internet untuk diterapkan di sekolah dan rumah.
+                    </div>
+
+                    <p class="mission-desc"><strong>KEGIATAN DETEKTIF:</strong> Tuliskan 5 aturan/komitmen emas berinternet aman versi dirimu (minimal 8 kata)!</p>
+                    <textarea id="inM15" class="input-text" style="height:90px; margin-bottom:12px;" placeholder="Tuliskan komitmen aturan berinternet di sini..."></textarea>
+                    <br>
+                    <button class="btn-action" onclick="checkM15()">KIRIM KOMITMEN ETIKA & TERIMA REPORT 🎓</button>
+                `;
+            } else if (currentMission === 16) {
+                renderCert();
+            }
+        }
+
+        /* --- MISSION CHECK FUNCTIONS --- */
+        function checkM1() {
+            const val = document.getElementById('inM1').value.trim().toLowerCase();
+            if (val.includes("roblox-hadiah-gratisan-klaim-sekarang.net")) {
+                playSound('correct'); score += 100; badges++;
+                answersLog['Misi 1 (Domain Palsu)'] = val;
+                showFeedback("🎉 FORENSIK TEPAT! Alamat web tersebut adalah domain palsu penipu (+100 Poin)!", false);
+                nextMission();
+            } else {
+                playSound('wrong');
+                showFeedback("❌ SALAH! Ketik domain palsu pada studi kasus: roblox-hadiah-gratisan-klaim-sekarang.net", true);
+            }
+        }
+
+        function checkM2() {
+            const val = document.getElementById('inM2').value.trim();
+            const words = val.split(/\s+/).length;
+            if (words >= 6) {
+                playSound('correct'); score += 100; badges++;
+                answersLog['Misi 2 (Stranger & OTP)'] = val;
+                showFeedback("🎉 TINDAKAN TEPAT! Kode OTP adalah kunci rahasia yang tidak boleh diberikan (+100 Poin)!", false);
+                nextMission();
+            } else {
+                playSound('wrong');
+                showFeedback("❌ Jawaban terlalu singkat! Tuliskan minimal 6 kata alasan menolak memberikan OTP.", true);
+            }
+        }
+
+        function checkM3() {
+            const val = document.getElementById('inM3').value.trim().toUpperCase();
+            if (val === "AYKYR") {
+                playSound('correct'); score += 100; badges++;
+                answersLog['Misi 3 (Caesar Cipher)'] = val;
+                showFeedback("🎉 DEKRIPSI PERFECT! C&rarr;A, A&rarr;Y, M&rarr;K, A&rarr;Y, T&rarr;R menghasilkan AYKYR (+100 Poin)!", false);
+                nextMission();
+            } else {
+                playSound('wrong');
+                showFeedback("❌ SALAH! Geser mundur 2 langkah setiap huruf: C&rarr;A, A&rarr;Y, M&rarr;K, A&rarr;Y, T&rarr;R. Jawaban: AYKYR.", true);
+            }
+        }
+
+        function checkM4() {
+            const val = document.getElementById('inM4').value.trim().toUpperCase();
+            if (val === "PRIVASI") {
+                playSound('correct'); score += 100; badges++;
+                answersLog['Misi 4 (Reverse Cipher)'] = val;
+                showFeedback("🎉 TEPAT! 'I S A V I R P' dibalik dari belakang menjadi 'PRIVASI' (+100 Poin)!", false);
+                nextMission();
+            } else {
+                playSound('wrong');
+                showFeedback("❌ SALAH! Susun huruf dari paling kanan ke kiri. Jawabannya: PRIVASI.", true);
+            }
+        }
+
+        function togglePass() {
+            const inP = document.getElementById('inM5Pass');
+            inP.type = (inP.type === 'password') ? 'text' : 'password';
+        }
+
+        function checkPassStrength() {
+            const val = document.getElementById('inM5Pass').value;
+            const meter = document.getElementById('passMeter');
+            const status = document.getElementById('passStatus');
+
+            let hasLen = val.length >= 8;
+            let hasUpper = /[A-Z]/.test(val);
+            let hasLower = /[a-z]/.test(val);
+            let hasNum = /[0-9]/.test(val);
+            let hasSpec = /[@#$%!]/.test(val);
+
+            let scoreP = [hasLen, hasUpper, hasLower, hasNum, hasSpec].filter(Boolean).length;
+            meter.style.width = (scoreP / 5 * 100) + '%';
+
+            if (scoreP < 5) {
+                meter.style.background = '#ef4444';
+                status.innerText = `Status Sandi: Belum Kuat (${scoreP}/5 Syarat Terpenuhi)`;
+                document.getElementById('btnM5Next').style.display = 'none';
+            } else {
+                meter.style.background = '#10b981';
+                status.innerText = "Status Sandi: BENTENG AMAN KELAS MILITER!";
+                document.getElementById('btnM5Next').style.display = 'inline-block';
+            }
+        }
+
+        function finishM5() {
+            const val = document.getElementById('inM5Pass').value;
+            playSound('correct'); score += 100; badges++;
+            answersLog['Misi 5 (Benteng Sandi)'] = val;
+            showFeedback("🎉 RACIKAN SANDI BERHASIL DIVERIFIKASI (+100 Poin)!", false);
+            nextMission();
+        }
+
+        function checkM6() {
+            const val = document.getElementById('inM6').value.trim().toUpperCase();
+            if (val.includes("SPOOFING") || val.includes("PHISHING")) {
+                playSound('correct'); score += 100; badges++;
+                answersLog['Misi 6 (Spoofing Log)'] = val;
+                showFeedback("🎉 VERIFIKASI LOG TEPAT! Email header terbukti palsu (+100 Poin)!", false);
+                nextMission();
+            } else {
+                playSound('wrong');
+                showFeedback("❌ SALAH! Jawaban yang tepat adalah SPOOFING atau PHISHING.", true);
+            }
+        }
+
+        function checkM7() {
+            const val = document.getElementById('inM7').value.trim();
+            const words = val.split(/\s+/).length;
+            if (words >= 8) {
+                playSound('correct'); score += 100; badges++;
+                answersLog['Misi 7 (Malware APK)'] = val;
+                showFeedback("🎉 ANALISIS MALWARE TEPAT! File APK palsu menyadap SMS OTP (+100 Poin)!", false);
+                nextMission();
+            } else {
+                playSound('wrong');
+                showFeedback("❌ Jawaban terlalu singkat! Tuliskan minimal 8 kata penjelasan teknismu.", true);
+            }
+        }
+
+        function checkM8() {
+            const val = document.getElementById('inM8').value.trim();
+            const words = val.split(/\s+/).length;
+            if (words >= 8) {
+                playSound('correct'); score += 100; badges++;
+                answersLog['Misi 8 (Bahaya Wi-Fi)'] = val;
+                showFeedback("🎉 ANALISIS JARINGAN TEPAT! Wi-Fi publik tanpa enkripsi rawan diintip (+100 Poin)!", false);
+                nextMission();
+            } else {
+                playSound('wrong');
+                showFeedback("❌ Jawaban terlalu singkat! Tuliskan minimal 8 kata penjelasan bahaya Wi-Fi publik.", true);
+            }
+        }
+
+        function checkM9() {
+            const val = document.getElementById('inM9').value.trim().toLowerCase();
+            if (val.includes(".tk") || val === "tk") {
+                playSound('correct'); score += 100; badges++;
+                answersLog['Misi 9 (Quishing QR)'] = val;
+                showFeedback("🎉 FORENSIK DOMAIN TEPAT! TLD .tk adalah milik penipu (+100 Poin)!", false);
+                nextMission();
+            } else {
+                playSound('wrong');
+                showFeedback("❌ SALAH! Perhatikan ekstensi domain di akhir link: .tk", true);
+            }
+        }
+
+        let foundSet = new Set();
+        function buildWsGrid() {
+            const matrix = [
+                ['P','R','I','V','A','S','I','A','B','C'],
+                ['D','E','F','G','H','I','J','K','L','M'],
+                ['S','A','N','D','I','N','O','P','Q','R'],
+                ['S','T','U','V','W','X','Y','Z','A','B'],
+                ['A','M','A','N','C','D','E','F','G','H']
+            ];
+
+            const grid = document.getElementById('gridWs');
+            grid.innerHTML = "";
+            foundSet.clear();
+
+            matrix.forEach(row => {
+                row.forEach(char => {
+                    const cell = document.createElement('div');
+                    cell.className = 'ws-cell';
+                    cell.innerText = char;
+                    cell.onclick = function() {
+                        this.classList.toggle('selected');
+                        checkWs();
+                    };
+                    grid.appendChild(cell);
+                });
+            });
+        }
+
+        function checkWs() {
+            const selected = document.querySelectorAll('.ws-cell.selected');
+            let txt = "";
+            selected.forEach(c => txt += c.innerText);
+
+            if (txt.includes("PRIVASI")) foundSet.add("PRIVASI");
+            if (txt.includes("SANDI")) foundSet.add("SANDI");
+            if (txt.includes("AMAN")) foundSet.add("AMAN");
+
+            document.getElementById('resWs').innerText = "Kata Ditemukan: " + (Array.from(foundSet).join(", ") || "Belum ada");
+
+            if (foundSet.size === 3) {
+                playSound('correct'); score += 100; badges++;
+                answersLog['Misi 10 (Matriks Kata)'] = "PRIVASI, SANDI, AMAN";
+                document.getElementById('resWs').innerText = "🎉 LENGKAP! 3 KATA KUNCI PERTAHANAN DITEMUKAN!";
+                setTimeout(() => { nextMission(); }, 1000);
+            }
+        }
+
+        function checkM11() {
+            const val = document.getElementById('inM11').value.trim();
+            const words = val.split(/\s+/).length;
+            if (words >= 8) {
+                playSound('correct'); score += 100; badges++;
+                answersLog['Misi 11 (Analisis Kartu Pelajar)'] = val;
+                showFeedback("🎉 ANALISIS KRITIS TEPAT! Pendapatmu disetujui (+100 Poin)!", false);
+                nextMission();
+            } else {
+                playSound('wrong');
+                showFeedback("❌ Jawabanmu terlalu singkat. Tuliskan minimal 8 kata penjelasanmu!", true);
+            }
+        }
+
+        function checkM12() {
+            const val = document.getElementById('inM12').value.trim().toUpperCase();
+            if (val.includes("PENIPUAN")) {
+                playSound('correct'); score += 100; badges++;
+                answersLog['Misi 12 (Identifikasi Penipuan)'] = val;
+                showFeedback("🎉 IDENTIFIKASI MODUS TEPAT! Peristiwa tersebut adalah penipuan siber (+100 Poin)!", false);
+                nextMission();
+            } else {
+                playSound('wrong');
+                showFeedback("❌ SALAH! Ketik jenis kejahatannya: PENIPUAN", true);
+            }
+        }
+
+        function checkM13() {
+            const val = document.getElementById('inM13').value.trim();
+            const words = val.split(/\s+/).length;
+            if (words >= 8) {
+                playSound('correct'); score += 100; badges++;
+                answersLog['Misi 13 (Evaluasi Geolocation)'] = val;
+                showFeedback("🎉 ANALISIS GEOLOCATION TEPAT! Membagikan lokasi fisik rawan kejahatan nyata (+100 Poin)!", false);
+                nextMission();
+            } else {
+                playSound('wrong');
+                showFeedback("❌ Tuliskan minimal 8 kata penjelasan bahaya live location!", true);
+            }
+        }
+
+        function checkM14() {
+            const val = document.getElementById('inM14').value.trim();
+            const words = val.split(/\s+/).length;
+            if (words >= 8) {
+                playSound('correct'); score += 100; badges++;
+                answersLog['Misi 14 (Pemulihan Peretasan)'] = val;
+                showFeedback("🎉 PLAN PEMULIHAN AKUN TEPAT! (+100 Poin)!", false);
+                nextMission();
+            } else {
+                playSound('wrong');
+                showFeedback("❌ Tuliskan minimal 8 kata langkah pemulihan akun!", true);
+            }
+        }
+
+        function checkM15() {
+            const val = document.getElementById('inM15').value.trim();
+            const words = val.split(/\s+/).length;
+            if (words >= 8) {
+                playSound('correct'); score += 100; badges++;
+                answersLog['Misi 15 (Komitmen Etika)'] = val;
+                showFeedback("🎉 KOMITMEN ETIKA DITERIMA! Terima laporan akhirmu (+100 Poin)!", false);
+                nextMission();
+            } else {
+                playSound('wrong');
+                showFeedback("❌ Tuliskan komitmen etikamu minimal 8 kata!", true);
+            }
+        }
+
+        function renderCert() {
+            updateStats();
+            const card = document.getElementById('cardArea');
+
+            let reportHtml = "";
+            for (let key in answersLog) {
+                reportHtml += `
+                    <div class="report-item">
+                        <strong>${key}:</strong> <span class="report-val">"${answersLog[key]}"</span>
+                    </div>
+                `;
+            }
+
+            card.innerHTML = `
+                <div class="cert-card">
+                    <h2 class="cert-title">🏆 SERTIFIKAT & LAPORAN DETEKTIF SIBER 🏆</h2>
+                    <p style="color:#94a3b8; font-size:0.9rem; margin-bottom:14px;">Diberikan kepada Penjaga Keamanan Digital Kelas 5 SD</p>
+                    
+                    <div class="case-box" style="text-align:left; border-left-color:#10b981; margin-bottom:14px;">
+                        <p><strong>TOTAL SKOR AKHIR :</strong> ${score} / 1500 POIN</p>
+                        <p><strong>BADGE LENCANA :</strong> ${badges} / 15 BADGE LENGKAP</p>
+                        <p><strong>GELAR KELULUSAN :</strong> MASTER DETEKTIF SIBER 15 KASUS INTERAKTIF</p>
+                    </div>
+
+                    <h3 style="text-align:left; font-size:1rem; color:#38bdf8; margin-top:16px;">📑 RINGKASAN HASIL JAWAAN & ANALISIS SISWA:</h3>
+                    <div class="report-grid">
+                        ${reportHtml}
+                    </div>
+
+                    <p style="font-size:0.85rem; color:#cbd5e1; margin-bottom:20px;">"Ingat selalu: Jaga kata sandimu, jangan klik tautan sembarangan, dan lindungi data pribadimu di dunia digital!"</p>
+                    
+                    <button class="btn-action" onclick="window.print()">SIMPAN / CETAK LAPORAN (PDF) 🖨️</button>
+                </div>
+            `;
+        }
+
+        window.onload = function() {
+            renderMission();
+        };
+    </script>
+</body>
+</html>
