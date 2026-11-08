@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ujian Keamanan Interaksi Digital - Kelas 5 SD</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f4f3ff',
+                            100: '#ebe9fe',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4338ca 100%);
+            min-height: 100vh;
+        }
+        .glass-header {
+            background: rgba(30, 27, 75, 0.75);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .card-shadow {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+        }
+        .custom-radio:checked + label {
+            border-color: #6366f1;
+            background-color: #f4f3ff;
+            color: #4338ca;
+            font-weight: 700;
+        }
+        .custom-checkbox:checked + label {
+            border-color: #6366f1;
+            background-color: #f4f3ff;
+            color: #4338ca;
+            font-weight: 700;
+        }
+        /* Question Grid Button Styling */
+        .q-grid-btn.answered {
+            background-color: #4f46e5;
+            color: #ffffff;
+            border-color: #4338ca;
+        }
+        .q-grid-btn.current {
+            ring: 3px;
+            ring-color: #f59e0b;
+        }
+    </style>
+</head>
+<body class="text-slate-800 font-sans antialiased pb-16">
+
+    <!-- HEADER BAR -->
+    <header class="glass-header sticky top-0 z-50 py-4 px-6 mb-8 text-white">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-indigo-500/30 border border-indigo-400/40 flex items-center justify-center text-indigo-200 text-xl font-bold">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">Ujian Keamanan Interaksi Digital</h1>
+                    <p class="text-xs text-indigo-200">Mode 1 Soal Per Halaman • Kelas 5 SD</p>
+                </div>
+            </div>
+
+            <!-- Removed Teacher Modal Button from header -->
+            <div class="flex items-center gap-3">
+                <span class="text-xs font-semibold text-indigo-200 bg-indigo-500/20 px-3 py-1.5 rounded-xl border border-indigo-400/20">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Auto-Sync Activated
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN APP CONTAINER -->
+    <main class="max-w-4xl mx-auto px-4">
+
+        <!-- ================= PAGE 1: IDENTITAS & REGISTRASI ================= -->
+        <div id="page-identity" class="bg-white rounded-3xl overflow-hidden card-shadow">
+            <!-- Card Header -->
+            <div class="bg-gradient-to-r from-indigo-600 via-indigo-700 to-indigo-800 p-8 text-white">
+                <div class="flex items-center gap-3 mb-2">
+                    <i class="fa-solid fa-user-gear text-2xl text-indigo-200"></i>
+                    <h2 class="text-2xl font-extrabold">Identitas & Konfigurasi Ujian</h2>
+                </div>
+                <p class="text-indigo-100 text-sm">Lengkapi data diri siswa dengan teliti sebelum memulai pengerjaan tes.</p>
+            </div>
+
+            <!-- Identity Form -->
+            <div class="p-8 space-y-6">
+                <div>
+                    <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-2">NAMA LENGKAP SISWA</label>
+                    <input type="text" id="inputNama" placeholder="Contoh: Petros Samuel" class="w-full px-5 py-3.5 rounded-xl border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none text-slate-800 font-semibold transition">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-2">KELAS</label>
+                        <input type="text" id="inputKelas" placeholder="Contoh: 5A" class="w-full px-5 py-3.5 rounded-xl border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none text-slate-800 font-semibold transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-2">NO. ABSEN</label>
+                        <input type="number" id="inputAbsen" placeholder="Contoh: 18" class="w-full px-5 py-3.5 rounded-xl border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none text-slate-800 font-semibold transition">
+                    </div>
+                </div>
+
+                <!-- Info Box Scenario -->
+                <div class="bg-indigo-50/60 border border-indigo-100 rounded-2xl p-6 text-indigo-900 space-y-2">
+                    <div class="flex items-center gap-2 font-bold text-sm text-indigo-700">
+                        <i class="fa-solid fa-file-signature text-base"></i> Ketentuan & Skema Penilaian Ujian:
+                    </div>
+                    <ul class="text-xs text-indigo-800 space-y-1.5 list-disc list-inside">
+                        <li><b>Tampilan:</b> 1 Halaman untuk 1 Soal (Navigasi bebas berpindah antar nomor).</li>
+                        <li><b>Total Soal:</b> 45 Nomor (35 Pilihan Ganda, 5 Benar/Salah, 5 Multiple Select).</li>
+                        <li><b>Nilai Maksimal:</b> 95 Poin (PG = 55 Poin, Benar/Salah = 15 Poin, Multiple Select = 25 Poin).</li>
+                        <li><b>Aturan Multiple Select:</b> Benar sebagian (misal 1 dari 2 opsi benar), mendapat <b>setengah nilai (2.5 Poin)</b>.</li>
+                    </ul>
+                </div>
+
+                <div class="pt-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div class="text-xs text-slate-400 font-medium">
+                        <b>Mode Display:</b> 1 Soal Per Halaman | <b>Total:</b> 45 Nomor
+                    </div>
+                    <button onclick="startExam()" class="w-full sm:w-auto px-8 py-4 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-extrabold rounded-2xl shadow-lg shadow-indigo-200 transition flex items-center justify-center gap-3 text-base">
+                        Mulai Ujian <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PAGE 2: SOAL UJIAN (1 SOAL PER HALAMAN) ================= -->
+        <div id="page-exam" class="hidden space-y-4">
+            
+            <!-- Top Exam Card (Progress Bar & Student Info) -->
+            <div class="bg-white rounded-3xl overflow-hidden card-shadow">
+                <div class="bg-slate-100 border-b border-slate-200 p-4 px-8 flex flex-col sm:flex-row justify-between items-center gap-2">
+                    <div class="flex items-center gap-3">
+                        <span id="examSectionTag" class="px-3 py-1 bg-indigo-100 text-indigo-700 font-extrabold text-xs rounded-full uppercase">BAGIAN 1: PILIHAN GANDA</span>
+                        <span id="examQuestionNum" class="text-sm font-bold text-slate-600">Soal 1 dari 45</span>
+                    </div>
+                    <div id="studentNameDisplay" class="text-xs font-bold text-slate-500">
+                        Petros Samuel (5A / 18)
+                    </div>
+                </div>
+
+                <!-- Progress Indicator Bar -->
+                <div class="w-full bg-slate-200 h-2">
+                    <div id="progressBarFill" class="bg-indigo-600 h-full w-0 transition-all duration-300"></div>
+                </div>
+
+                <!-- Single Question Container Card -->
+                <div class="p-8">
+                    <div id="questionContainer" class="space-y-6">
+                        <!-- Dynamic Single Question Rendered Here -->
+                    </div>
+
+                    <!-- Navigation Controls -->
+                    <div class="flex justify-between items-center mt-10 pt-6 border-t border-slate-200">
+                        <button id="btnPrev" onclick="prevQuestion()" class="px-6 py-3 rounded-xl border border-slate-300 font-bold text-slate-600 hover:bg-slate-100 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2">
+                            <i class="fa-solid fa-chevron-left"></i> Sebelumnya
+                        </button>
+                        
+                        <div class="flex items-center gap-2">
+                            <button onclick="toggleQuestionGrid()" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-grid-2"></i> Nomor Soal
+                            </button>
+                            <button id="btnNext" onclick="nextQuestion()" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition flex items-center gap-2">
+                                Selanjutnya <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+                        </div>
+
+                        <button id="btnSubmitExam" onclick="confirmSubmitExam()" class="hidden px-8 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl shadow-md transition flex items-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i> Selesai & Kirim
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Jump Question Matrix Drawer (Hidden by Default) -->
+            <div id="questionGridDrawer" class="hidden bg-white rounded-3xl p-6 card-shadow border border-slate-200 space-y-3">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                    <span class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Peta Navigasi Soal (45 Nomor)</span>
+                    <span class="text-xs text-slate-400">Warna Biru = Sudah Dijawab</span>
+                </div>
+                <div id="questionGridContainer" class="grid grid-cols-5 sm:grid-cols-9 gap-2">
+                    <!-- Dynamic Grid Buttons 1 - 45 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PAGE 3: REKAP HASIL & NILAI ================= -->
+        <div id="page-result" class="hidden space-y-6">
+            
+            <!-- Result Banner Card -->
+            <div class="bg-white rounded-3xl overflow-hidden card-shadow p-8 text-center space-y-4">
+                <div class="w-20 h-20 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center text-4xl mx-auto shadow-inner">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <h2 class="text-2xl font-extrabold text-slate-800">Ujian Selesai! Berikut Rekap Nilai Anda</h2>
+                <p id="resultStudentInfo" class="text-sm text-slate-500 font-medium">Petros Samuel • Kelas 5A (No. Absen 18)</p>
+
+                <!-- Big Score Gauge -->
+                <div class="py-4">
+                    <div class="inline-block bg-gradient-to-br from-indigo-50 to-indigo-100 border-2 border-indigo-200 rounded-3xl px-12 py-6">
+                        <span class="block text-xs font-bold uppercase tracking-widest text-indigo-500 mb-1">NILAI AKHIR SISWA</span>
+                        <span id="finalScoreDisplay" class="text-6xl font-black text-indigo-700 font-mono">0 / 95</span>
+                    </div>
+                </div>
+
+                <!-- Sync Status Badge -->
+                <div id="syncStatusBadge" class="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-700 border border-amber-200 rounded-full text-xs font-bold">
+                    <i class="fa-solid fa-spinner animate-spin"></i> Mengirim data nilai ke server Excel...
+                </div>
+            </div>
+
+            <!-- Detail Score Breakdown -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-2xl card-shadow border-t-4 border-indigo-500 space-y-2">
+                    <span class="text-xs font-extrabold text-slate-400 uppercase">PILIHAN GANDA (35 SOAL)</span>
+                    <div id="scorePg" class="text-2xl font-black text-slate-800">0 / 55 Poin</div>
+                    <p class="text-xs text-slate-500">Bobot 1.57 Poin per soal yang dijawab benar.</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-2xl card-shadow border-t-4 border-emerald-500 space-y-2">
+                    <span class="text-xs font-extrabold text-slate-400 uppercase">BENAR / SALAH (5 SOAL)</span>
+                    <div id="scoreTf" class="text-2xl font-black text-slate-800">0 / 15 Poin</div>
+                    <p class="text-xs text-slate-500">Bobot 3 Poin per soal yang dijawab benar.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl card-shadow border-t-4 border-purple-500 space-y-2">
+                    <span class="text-xs font-extrabold text-slate-400 uppercase">MULTIPLE SELECT (5 SOAL)</span>
+                    <div id="scoreMs" class="text-2xl font-black text-slate-800">0 / 25 Poin</div>
+                    <p class="text-xs text-slate-500">Maks 5 Poin/soal (Benar sebagian = 2.5 Poin).</p>
+                </div>
+            </div>
+
+            <!-- Detailed Answers & Explanations Accordion -->
+            <div class="bg-white rounded-3xl card-shadow p-8 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+                    <h3 class="text-lg font-extrabold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-indigo-600"></i> Rekapitualisasi & Pembahasan Jawaban
+                    </h3>
+                    <button onclick="window.print()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition">
+                        <i class="fa-solid fa-print"></i> Cetak / Simpan PDF
+                    </button>
+                </div>
+
+                <div id="answersReviewContainer" class="space-y-4">
+                    <!-- Dynamic Answers Review -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Removed Teacher Config Modal -->
+
+    <!-- JAVASCRIPT LOGIC & QUESTION DATABASE -->
+    <script>
+        /* ================= HARDCODED SCRIPT CONFIGURATION ================= */
+        // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL DIRECTLY BELOW:
+        const HARDCODED_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwytVAXhZa9sj0et9SIQK0rC27lY7aO06v0rofM3HY0GcOdvKbhsZbsX4dh8RQob6_0Yw/exec";
+
+        /* ================= DATABASE SOAL (45 NOMOR) ================= */
+        const questionsDB = [
+            // --- BAGIAN 1: PILIHAN GANDA (35 NOMOR) ---
+            {
+                type: 'pg', id: 1,
+                q: "Di bawah ini yang merupakan pengertian dari Data Publik adalah...",
+                opts: ["Data rahasia yang disimpan pemerintah dan instansi resmi", "Informasi umum yang aman dibagikan terbuka di internet", "Informasi sensitif yang memiliki potensi kerugian finansial", "Kata sandi rahasia untuk masuk ke dalam server sekolah"],
+                ans: 1,
+                exp: "Data Publik adalah jenis informasi umum yang aman diketahui dan dibagikan secara bebas kepada orang lain di internet."
+            },
+            {
+                type: 'pg', id: 2,
+                q: "Di antara data berikut, manakah informasi yang tergolong sebagai Data Publik?",
+                opts: ["Nomor urut registrasi Kartu Keluarga", "Tanggal, bulan, dan tahun lahir lengkap", "Judul buku bacaan dan warna kesukaan", "Alamat rumah dan titik lokasi tempat tinggal"],
+                ans: 2,
+                exp: "Judul buku bacaan dan warna kesukaan adalah informasi umum yang aman diketahui publik."
+            },
+            {
+                type: 'pg', id: 3,
+                q: "Mengapa nomor HP orang tua tergolong sebagai data pribadi sensitif?",
+                opts: ["Karena rawan dipakai penipu untuk pesan bodong dan pemerasan", "Karena nomor HP otomatis terblokir jika diketahui orang lain", "Karena teman sekolah dilarang menghubungi nomor telepon ortu", "Karena nomor HP merupakan identitas perangkat yang mahal"],
+                ans: 0,
+                exp: "Nomor HP privat sangat berisiko jika jatuh ke tangan penjahat siber karena dapat digunakan untuk penipuan atau spam."
+            },
+            {
+                type: 'pg', id: 4,
+                q: "Budi mengunggah gambar hasil lukisannya ke grup kelas. Tindakan Budi termasuk membagikan...",
+                opts: ["Data Pribadi Sensitif", "Data Rahasia Negara", "Data Publik yang Aman", "Data Terlarang Sekolah"],
+                ans: 2,
+                exp: "Hasil karya lukisan atau seni buatan sendiri merupakan bentuk data publik yang aman dan positif."
+            },
+            {
+                type: 'pg', id: 5,
+                q: "Manakah contoh Data Rahasia yang TIDAK Boleh diberikan kepada orang asing di media sosial?",
+                opts: ["Cita-cita dan impian", "Kode SMS OTP rahasia", "Nama panggilan kelas", "Hobi bermain sepak bola"],
+                ans: 1,
+                exp: "Kode OTP adalah kunci akses keamanan sekali pakai yang tidak boleh dibagikan kepada siapa pun."
+            },
+            {
+                type: 'pg', id: 6,
+                q: "Edo mengunggah foto kartu pelajar temannya yang memuat NIK dan alamat. Tindakan Edo...",
+                opts: ["Sangat baik untuk memperluas jaringan pertemanan", "Berbahaya karena membocorkan privasi sensitif teman", "Cukup wajar karena identitas pelajar bersifat terbuka", "Sangat bagus untuk meningkatkan jumlah pengikut medsos"],
+                ans: 1,
+                exp: "Mengunggah kartu pelajar membocorkan NIK dan alamat rumah yang sangat berbahaya bagi keselamatan privasi."
+            },
+            {
+                type: 'pg', id: 7,
+                q: "Trik penipuan siber menggunakan umpan hadiah game gratis untuk mencuri akun dinamakan...",
+                opts: ["Phishing", "Browsing", "Coding", "Streaming"],
+                ans: 0,
+                exp: "Phishing adalah kejahatan siber yang menggunakan 'umpan' palsu untuk memancing korban mengetikkan informasi rahasia."
+            },
+            {
+                type: 'pg', id: 8,
+                q: "Akun asing mengaku sebagai \"Admin Resmi Game\" dan meminta password-mu. Modus ini disebut...",
+                opts: ["Gaming", "Spoofing", "Downloading", "Scanning"],
+                ans: 1,
+                exp: "Spoofing adalah penyamaran identitas palsu agar korban percaya dan menyerahkan data sensitif."
+            },
+            {
+                type: 'pg', id: 9,
+                q: "Apa yang dimaksud dengan ancaman Stranger Danger di dunia digital?",
+                opts: ["Risiko kerusakan laptop akibat baterai yang habis mendadak", "Bahaya dari pengguna asing ramah yang meminta data rahasia", "Gangguan sinyal internet saat sedang belajar secara online", "Bahaya dari perangkat lunak ilegal yang merusak layar ponsel"],
+                ans: 1,
+                exp: "Stranger Danger di internet adalah bahaya interaksi dengan orang asing yang berpura-pura ramah demi mencuri data."
+            },
+            {
+                type: 'pg', id: 10,
+                q: "Siti mendapat pesan WA: \"Kamu menang 50 juta! Klik www.klaim-uang.net\". Tindakan Siti adalah...",
+                opts: ["Menekan link tersebut agar uang segera dikirimkan", "Mengirimkan foto identitas diri sebagai syarat klaim", "Mengabaikan, menghapus, dan melapor ke orang tua/guru", "Membagikan ulang pesan tersebut ke grup obrolan teman"],
+                ans: 2,
+                exp: "Pesan iming-iming hadiah gratis dari tautan tidak dikenal wajib diabaikan, dihapus, dan dilaporkan."
+            },
+            {
+                type: 'pg', id: 11,
+                q: "Ciri utama dari sebuah pesan Phishing penipuan online adalah...",
+                opts: ["Dikirim resmi oleh wali kelas melalui email sekolah", "Memberikan iming-iming menggiurkan dan mendesak korban", "Dikirimkan secara berkala pada jam kerja lembaga resmi", "Tidak pernah meminta kata sandi maupun data pribadi"],
+                ans: 1,
+                exp: "Pesan Phishing biasanya menciptakan rasa panik atau mendesak dengan iming-iming hadiah mahal."
+            },
+            {
+                type: 'pg', id: 12,
+                q: "Pemain game asing mengajakmu bertemu di tempat sepi tanpa izin orang tua. Tindakanmu adalah...",
+                opts: ["Menyetujui ajakan tersebut karena dia teman mabar yang baik", "Menolak tegas, memblokir akun, dan melapor ke orang tua", "Pergi diam-diam bersama teman sekelas ke lokasi tersebut", "Meminta transaksi diamond game sebelum bersedia bertemu"],
+                ans: 1,
+                exp: "Jangan pernah menyetujui ajakan bertemu secara fisik dari orang tak dikenal di dunia maya."
+            },
+            {
+                type: 'pg', id: 13,
+                q: "Mengapa kita dilarang menyalakan Live Location publik saat sendirian di tempat umum?",
+                opts: ["Karena memboroskan kuota internet yang sedang digunakan", "Karena rawan dimanfaatkan pelaku kejahatan untuk melacak kita", "Karena membuat tampilan foto di medsos menjadi buram", "Karena membuat daya baterai ponsel habis lebih cepat"],
+                ans: 1,
+                exp: "Membagikan lokasi fisik secara langsung membuka celah kejahatan pelacakan fisik di dunia nyata."
+            },
+            {
+                type: 'pg', id: 14,
+                q: "Mengapa kita DILARANG menggunakan tanggal lahir sebagai kata sandi?",
+                opts: ["Karena angka tanggal lahir terlampau rumit dihafalkan", "Karena sangat mudah ditebak peretas dari data sosmed", "Karena kombinasi angka tanggal lahir terlalu panjang", "Karena angka tanggal lahir hanya khusus untuk akun bank"],
+                ans: 1,
+                exp: "Tanggal lahir adalah informasi umum yang sangat mudah ditemukan oleh peretas dari media sosial."
+            },
+            {
+                type: 'pg', id: 15,
+                q: "Di bawah ini yang merupakan contoh kata sandi yang SANGAT LEMAH adalah...",
+                opts: ["Kuc1ng#L0mp4t!", "12345678", "B4ngkU#S3k0lah!", "P3ns1l#B1ru99"],
+                ans: 1,
+                exp: "Deretan angka berurutan seperti 12345678 sangat rapuh dan dapat dibobol hacker dalam hitungan detik."
+            },
+            {
+                type: 'pg', id: 16,
+                q: "Mengapa kata sandi budi2014 dianggap sangat berbahaya?",
+                opts: ["Menggabungkan nama sendiri dan tahun lahir yang gampang ditebak", "Menggunakan kombinasi teks yang terlalu panjang untuk diketik", "Menyisipkan terlampau banyak simbol unik yang sulit diingat", "Menggunakan susunan huruf kapital di bagian depan kata sandi"],
+                ans: 0,
+                exp: "Mengkombinasikan nama panggilan dan tahun lahir adalah pola jebakan utama yang paling sering ditebak hacker."
+            },
+            {
+                type: 'pg', id: 17,
+                q: "Berapa panjang karakter minimal disarankan untuk kata sandi benteng yang aman?",
+                opts: ["2 sampai 3 karakter", "4 sampai 5 karakter", "8 sampai 12 karakter", "Tepat 1 karakter saja"],
+                ans: 2,
+                exp: "Karakter minimal yang disarankan untuk keamanan standar adalah 8 hingga 12 karakter."
+            },
+            {
+                type: 'pg', id: 18,
+                q: "Di bawah ini yang BUKAN merupakan pilar meracik kata sandi super kuat adalah...",
+                opts: ["Menggunakan variasi kombinasi huruf besar dan huruf kecil", "Menyisipkan susunan angka acak di antara deretan huruf", "Menggunakan nama panggilan pribadi secara lengkap dan jelas", "Menambahkan simbol khusus unik seperti @, #, atau !"],
+                ans: 2,
+                exp: "Menggunakan nama panggilan pribadi justru membuat password menjadi sangat lemah."
+            },
+            {
+                type: 'pg', id: 19,
+                q: "Manakah yang merupakan contoh simbol khusus penambah kekuatan kata sandi?",
+                opts: ["Huruf A, B, C", "Angka 1, 2, 3", "Simbol @, #, $", "Spasi kosong"],
+                ans: 2,
+                exp: "Simbol spesial seperti @, #, $, dan % menambahkan variasi keamanan yang sulit ditebak mesin peretas."
+            },
+            {
+                type: 'pg', id: 20,
+                q: "Apa dampak buruk jika kita memakai kata sandi yang sama untuk seluruh akun?",
+                opts: ["Akun otomatis kebal terhadap segala ancaman virus", "Jika satu akun dibobol, seluruh akun lain ikut terancam", "Kecepatan akses internet perangkat meningkat drastis", "Perangkat mendapat akses akun premium secara gratisan"],
+                ans: 1,
+                exp: "Memakai satu password untuk semua akun memicu efek domino: jika 1 dibobol, semua akun ikut retas."
+            },
+            {
+                type: 'pg', id: 21,
+                q: "Ani tergiur promo top-up diamond murah di IG. Setelah transfer, Ani diblokir penipu. Kasus ini adalah...",
+                opts: ["Gangguan teknis jaringan dari server game", "Penipuan online berkedok promo tak masuk akal", "Prosedur standar pembelian saldo game resmi", "Kesalahan pembeli karena salah mengetik rekening"],
+                ans: 1,
+                exp: "Ini adalah modus penipuan berkedok harga tidak masuk akal untuk menguras uang korban."
+            },
+            {
+                type: 'pg', id: 22,
+                q: "Akun Rani mendadak mengirim pesan kasar karena dibajak. Langkah DARURAT Rani adalah...",
+                opts: ["Membiarkan hal tersebut dan bersikap pura-pura tidak tahu", "Menghapus aplikasi perpesanan langsung dari layar ponsel", "Ganti password, lapor ortu/guru, dan klarifikasi ke grup", "Balas mengirim pesan kasar ke semua kontak teman sekolah"],
+                ans: 2,
+                exp: "Segera reset password, klarifikasi ke kontak grup bahwa akun dibajak, dan minta bantuan guru/ortu."
+            },
+            {
+                type: 'pg', id: 23,
+                q: "Doni menginstal Cek_Paket.apk dari SMS palsu hingga saldo ortu terkuras. Bahaya APK palsu adalah...",
+                opts: ["Mengunduh aplikasi game baru secara berulang tanpa henti", "Menginstal malware penyadap SMS pencuri OTP e-wallet", "Mengubah tampilan gambar latar belakang layar ponsel", "Mengirimkan pesan berupa gambar ke semua kontak HP"],
+                ans: 1,
+                exp: "File APK berbahaya dari SMS biasanya berupa Malware penyadap SMS yang membaca kode OTP perbankan/e-wallet."
+            },
+            {
+                type: 'pg', id: 24,
+                q: "Mengapa terhubung ke jaringan Wi-Fi umum tanpa password berbahaya bagi perangkat?",
+                opts: ["Lalu lintas data tidak dienkripsi sehingga rawan diintip", "Pemakaian Wi-Fi publik merusak kapasitas baterai ponsel", "Jaringan umum selalu menyebarkan virus perusak layar HP", "Koneksi Wi-Fi publik tidak bisa mengakses mesin pencari"],
+                ans: 0,
+                exp: "Wi-Fi publik tanpa password tidak mengenkripsi lalu lintas data, memudahkan peretas melakukan aksi penyadapan (sniffing)."
+            },
+            {
+                type: 'pg', id: 25,
+                q: "Dampak buruk mengunduh aplikasi game modifikasi (Mod APK) dari situs tidak resmi adalah...",
+                opts: ["Ponsel bekerja lebih cepat serta jauh lebih hemat energi", "Disisipi malware yang merusak sistem dan mencuri data", "Game otomatis terdaftar ke dalam turnamen internasional", "Akun game dijamin aman oleh pengembang resmi aplikasi"],
+                ans: 1,
+                exp: "Aplikasi Mod APK ilegal sangat rentan disisipi virus/malware pencuri data dan perusak perangkat."
+            },
+            {
+                type: 'pg', id: 26,
+                q: "Di mana tempat terbaik mencatat kata sandi akun penting agar aman dari pencurian?",
+                opts: ["Ditulis pada kertas stiker yang ditempel di layar komputer", "Diunggah ke dalam cerita media sosial pribadi", "Dicatat pada buku rahasia fisik atau password manager", "Dikirimkan ke dalam obrolan grup kelas sekolah"],
+                ans: 2,
+                exp: "Catatlah kata sandi di buku rahasia fisik pribadi yang aman atau manfaatkan aplikasi Password Manager resmi."
+            },
+            {
+                type: 'pg', id: 27,
+                q: "Jika secara tidak sengaja mengetik password di situs phishing, langkah pertamamu adalah...",
+                opts: ["Langsung mengganti kata sandi akun dan nyalakan fitur 2FA", "Mematikan lampu kamar lalu langsung pergi tidur lelap", "Membiarkan kondisi tersebut hingga akhir pekan mendatang", "Memberitahukan kata sandi baru kepada teman bermain game"],
+                ans: 0,
+                exp: "Segera lakukan penggantian kata sandi pada situs resmi dan aktifkan Verifikasi Dua Langkah (2FA)."
+            },
+            {
+                type: 'pg', id: 28,
+                q: "Fitur keamanan yang mengirim kode verifikasi tambahan ke HP saat login di perangkat baru disebut...",
+                opts: ["Auto-save Password", "Autocorrect Text", "Verifikasi Dua Langkah (2FA)", "Screen Mirroring"],
+                ans: 2,
+                exp: "Verifikasi Dua Langkah (2FA) memberikan lapisan pertahanan ganda setelah memasukkan kata sandi."
+            },
+            {
+                type: 'pg', id: 29,
+                q: "Tindakan menjaga keamanan digital setelah memakai komputer sekolah adalah...",
+                opts: ["Membiarkan akun tetap terhubung di komputer laboratorium", "Mengklik tombol Logout dari semua akun yang digunakan", "Menyimpan kata sandi pribadi di dalam peramban sekolah", "Mengubah kata sandi komputer sekolah tanpa izin guru"],
+                ans: 1,
+                exp: "Selalu klik tombol Logout agar akunmu tidak diakses atau disalahgunakan oleh pengguna komputer berikutnya."
+            },
+            {
+                type: 'pg', id: 30,
+                q: "Pengaturan privasi profil media sosial paling aman untuk pelajar adalah...",
+                opts: ["Mengatur profil menjadi Publik agar dikenal luas", "Mengatur profil Privat dan memilih teman yang dikenal", "Mencantumkan kata sandi di kolom deskripsi profil", "Menampilkan foto alamat rumah pada profil media sosial"],
+                ans: 1,
+                exp: "Gunakan mode Privat agar postingan dan data dirimu hanya dapat dilihat oleh teman yang dikenal di dunia nyata."
+            },
+            {
+                type: 'pg', id: 31,
+                q: "Mengapa menyebarkan foto NIK atau Kartu Keluarga milik keluarga di internet sangat berbahaya?",
+                opts: ["Mengurangi kapasitas memori penyimpanan ponsel kita", "Rawan disalahgunakan untuk pinjol ilegal dan penipuan", "Menyebabkan warna fisik dokumen pudar di internet", "Dokumen identitas fisik dilarang keras untuk difoto"],
+                ans: 1,
+                exp: "Foto NIK & KK rentan dipakai penjahat siber untuk pendaftaran pinjaman online ilegal atau pemalsuan identitas."
+            },
+            {
+                type: 'pg', id: 32,
+                q: "Teman mendadak WA minta pinjaman uang e-wallet. Langkah verifikasi yang benar adalah...",
+                opts: ["Mentransfer uang langsung tanpa perlu banyak bertanya", "Menelepon atau menanyai langsung untuk konfirmasi", "Dimarahi dan nomornya langsung diblokir permanen", "Mengirimkan kode SMS OTP kita sebagai bukti bantuan"],
+                ans: 1,
+                exp: "Verifikasi pesan minta uang via WhatsApp dengan menelepon suara/video langsung untuk memastikan bukan pembajakan."
+            },
+            {
+                type: 'pg', id: 33,
+                q: "Contoh bentuk Jejak Digital Positif yang baik ditinggalkan di internet adalah...",
+                opts: ["Mengunggah komentar mengejek pada postingan orang lain", "Membagikan karya lukisan, puisi, atau video tutorial", "Menyebarkan berita yang belum jelas kebenarannya", "Mengunggah foto dokumen pribadi milik teman sekolah"],
+                ans: 1,
+                exp: "Membagikan karya positif dan tutorial bermanfaat akan membangun reputasi jejak digital yang baik."
+            },
+            {
+                type: 'pg', id: 34,
+                q: "Apa yang harus kamu lakukan jika menemukan konten negatif di internet?",
+                opts: ["Menyebarkan kembali konten tersebut ke grup agar viral", "Melaporkan (Report) konten dan memberitahu ortu/guru", "Meniru tindakan negatif yang ada di dalam konten tersebut", "Menyimpan video negatif tersebut di dalam memori ponsel"],
+                ans: 1,
+                exp: "Jika ada konten berbahaya/negatif, gunakan fitur Report dan komunikasikan dengan orang tua atau guru."
+            },
+            {
+                type: 'pg', id: 35,
+                q: "Kalimat bijak paling tepat dalam menjaga keamanan interaksi digital adalah...",
+                opts: ["\"Bagikan semua hal di internet agar kamu makin terkenal!\"", "\"Lindungi data rahasiamu seperti menjaga kunci rumah!\"", "\"Berikan kata sandimu pada siapa saja yang mengaku teman!\"", "\"Klik semua tautan hadiah gratis di internet agar kaya!\""],
+                ans: 1,
+                exp: "Jagalah privasi dan kata sandimu sebagaimana kamu menjaga keamanan kunci pintu rumahmu sendiri."
+            },
+
+            // --- BAGIAN 2: BENAR / SALAH (5 NOMOR) ---
+            {
+                type: 'tf', id: 36,
+                q: "Nama panggilan, hobi, dan makanan kesukaan tergolong sebagai Data Publik yang aman dibahas atau dibagikan di internet.",
+                opts: ["BENAR", "SALAH"],
+                ans: 0,
+                exp: "BENAR. Informasi umum seperti hobi dan makanan favorit tergolong data publik yang aman."
+            },
+            {
+                type: 'tf', id: 37,
+                q: "Pihak pengembang game resmi atau pihak bank berhak meminta kode SMS OTP milik pengguna melalui pesan singkat kapan saja.",
+                opts: ["BENAR", "SALAH"],
+                ans: 1,
+                exp: "SALAH. Pihak bank atau pengembang game resmi TIDAK PERNAH meminta kode OTP dari pengguna."
+            },
+            {
+                type: 'tf', id: 38,
+                q: "Kata sandi K3nj1r0#2026! lebih kuat dan aman dibandingkan dengan kata sandi kenjiro2012.",
+                opts: ["BENAR", "SALAH"],
+                ans: 0,
+                exp: "BENAR. K3nj1r0#2026! menggunakan pilar huruf besar, kecil, angka, dan simbol khusus."
+            },
+            {
+                type: 'tf', id: 39,
+                q: "Menghubungkan ponsel ke jaringan Wi-Fi publik tanpa password di tempat umum selalu 100% aman dari risiko penyadapan data.",
+                opts: ["BENAR", "SALAH"],
+                ans: 1,
+                exp: "SALAH. Wi-Fi publik tanpa password sangat berbahaya karena lalu lintas data tidak dienkripsi."
+            },
+            {
+                type: 'tf', id: 40,
+                q: "Phishing adalah kejahatan siber yang menggunakan umpan hadiah atau tautan palsu untuk mengelabuhi korban agar memberikan informasi rahasia.",
+                opts: ["BENAR", "SALAH"],
+                ans: 0,
+                exp: "BENAR. Ini adalah definisi tepat dari aksi penipuan siber Phishing."
+            },
+
+            // --- BAGIAN 3: PILIHAN GANDA KOMPLEKS / MULTIPLE SELECT (5 NOMOR) ---
+            {
+                type: 'ms', id: 41,
+                q: "Manakah di antara informasi berikut yang tergolong sebagai Data Pribadi / Rahasia yang WAJIB dilindungi? (Pilih 3 Jawaban)",
+                opts: ["Nomor Induk Kependudukan (NIK)", "Tanggal, bulan, dan tahun lahir lengkap", "Olahraga dan warna favorit", "Kode SMS OTP (One-Time Password)", "Cita-cita masa depan"],
+                ans: [0, 1, 3],
+                exp: "Jawaban Benar: A (NIK), B (Tanggal Lahir Lengkap), dan D (Kode SMS OTP)."
+            },
+            {
+                type: 'ms', id: 42,
+                q: "Manakah di bawah ini yang merupakan 4 Pilar Utama dalam meracik kata sandi (password) super kuat? (Pilih 3 Jawaban)",
+                opts: ["Terdiri dari minimal 8 hingga 12 karakter", "Menggunakan gabungan huruf kapital (A-Z) dan huruf kecil (a-z)", "Menggunakan nama sendiri atau tanggal lahir", "Menyisipkan kombinasi angka dan simbol khusus (@, #, !)", "Menggunakan susunan angka berurutan seperti 123456"],
+                ans: [0, 1, 3],
+                exp: "Jawaban Benar: A (Min 8-12 karakter), B (Kapital & Kecil), dan D (Angka & Simbol khusus)."
+            },
+            {
+                type: 'ms', id: 43,
+                q: "Manakah di bawah ini yang merupakan ciri-ciri dari serangan Phishing atau Spoofing? (Pilih 2 Jawaban)",
+                opts: ["Menggunakan tautan (link) palsu yang mirip dengan situs resmi", "Mengirimkan email atau pesan dari alamat resmi sekolah", "Memakai iming-iming hadiah gratis tak masuk akal atau ancaman akun akan dihapus", "Tidak pernah meminta kata sandi atau kode OTP korban"],
+                ans: [0, 2],
+                exp: "Jawaban Benar: A (Tautan palsu mirip asli) dan C (Iming-iming hadiah gratis/ancaman akun)."
+            },
+            {
+                type: 'ms', id: 44,
+                q: "Apa saja bahaya yang dapat terjadi jika seseorang mengunggah foto Kartu Pelajar / Dokumen Identitas ke media sosial? (Pilih 2 Jawaban)",
+                opts: ["Alamat rumah dan data diri dapat dimanfaatkan pelaku kejahatan siber", "Mempercepat koneksi internet ponsel", "Tanggal lahir dapat digunakan peretas untuk menebak kata sandi akun", "Jumlah pengikut media sosial akan bertambah secara otomatis"],
+                ans: [0, 2],
+                exp: "Jawaban Benar: A (Alamat/data diri dimanfaatkan kejahatan) dan C (Tanggal lahir dipadukan penebak password)."
+            },
+            {
+                type: 'ms', id: 45,
+                q: "Manakah langkah-langkah yang TEPAT untuk menjaga keamanan akun digitalmu saat menggunakan internet? (Pilih 3 Jawaban)",
+                opts: ["Mengaktifkan fitur Verifikasi Dua Langkah (2FA)", "Mengatur akun media sosial menjadi mode Private (Privat)", "Memberikan kata sandi kepada teman mabar agar bisa saling bantu", "Mengklik tombol Logout setelah menggunakan komputer di tempat umum/sekolah", "Memakai kata sandi 123456 agar tidak mudah lupa"],
+                ans: [0, 1, 3],
+                exp: "Jawaban Benar: A (Nyalakan 2FA), B (Mode Private), dan D (Selalu Logout di komputer umum)."
+            }
+        ];
+
+        /* ================= STATE MANAGEMENT ================= */
+        let studentData = { nama: '', kelas: '', absen: '' };
+        let currentQuestionIdx = 0;
+        let userAnswers = {}; // { qId: answerValue }
+
+        window.onload = function() {
+            // Initialization if needed
+        }
+
+        function startExam() {
+            const nama = document.getElementById('inputNama').value.trim();
+            const kelas = document.getElementById('inputKelas').value.trim();
+            const absen = document.getElementById('inputAbsen').value.trim();
+
+            if (!nama || !kelas || !absen) {
+                alert('Mohon lengkapi Nama, Kelas, dan Nomor Absen terlebih dahulu!');
+                return;
+            }
+
+            studentData = { nama, kelas, absen };
+            document.getElementById('studentNameDisplay').innerText = `${nama} (${kelas} / Absen ${absen})`;
+
+            document.getElementById('page-identity').classList.add('hidden');
+            document.getElementById('page-exam').classList.remove('hidden');
+
+            renderQuestionGrid();
+            renderQuestion(0);
+        }
+
+        /* Single Question Page Rendering */
+        function renderQuestion(idx) {
+            currentQuestionIdx = idx;
+            const q = questionsDB[idx];
+            const container = document.getElementById('questionContainer');
+
+            // Header Section Tagging
+            const sectionTag = document.getElementById('examSectionTag');
+            if (q.type === 'pg') {
+                sectionTag.innerText = "BAGIAN 1: PILIHAN GANDA";
+                sectionTag.className = "px-3 py-1 bg-indigo-100 text-indigo-700 font-extrabold text-xs rounded-full uppercase";
+            } else if (q.type === 'tf') {
+                sectionTag.innerText = "BAGIAN 2: BENAR / SALAH";
+                sectionTag.className = "px-3 py-1 bg-emerald-100 text-emerald-700 font-extrabold text-xs rounded-full uppercase";
+            } else if (q.type === 'ms') {
+                sectionTag.innerText = "BAGIAN 3: MULTIPLE SELECT (PILIH LEBIH DARI 1)";
+                sectionTag.className = "px-3 py-1 bg-purple-100 text-purple-700 font-extrabold text-xs rounded-full uppercase";
+            }
+
+            // Progress Bar Update
+            const progressPct = ((idx + 1) / questionsDB.length) * 100;
+            document.getElementById('progressBarFill').style.width = `${progressPct}%`;
+            document.getElementById('examQuestionNum').innerText = `Soal ${idx + 1} dari ${questionsDB.length}`;
+
+            // Build Options HTML
+            let optionsHtml = "";
+
+            if (q.type === 'pg' || q.type === 'tf') {
+                const currentAns = userAnswers[q.id];
+                q.opts.forEach((opt, oIdx) => {
+                    const isChecked = currentAns === oIdx ? 'checked' : '';
+                    const prefix = q.type === 'pg' ? String.fromCharCode(65 + oIdx) + ". " : "";
+                    optionsHtml += `
+                        <div class="relative">
+                            <input type="radio" name="q_${q.id}" id="opt_${q.id}_${oIdx}" value="${oIdx}" class="custom-radio sr-only" ${isChecked} onchange="saveAnswer(${q.id}, ${oIdx})">
+                            <label for="opt_${q.id}_${oIdx}" class="block p-4 border-2 border-slate-200 rounded-2xl cursor-pointer hover:border-indigo-300 transition text-sm font-semibold text-slate-700 leading-relaxed">
+                                <span class="font-extrabold mr-2">${prefix}</span>${opt}
+                            </label>
+                        </div>
+                    `;
+                });
+            } else if (q.type === 'ms') {
+                const currentAns = userAnswers[q.id] || [];
+                q.opts.forEach((opt, oIdx) => {
+                    const isChecked = currentAns.includes(oIdx) ? 'checked' : '';
+                    const prefix = String.fromCharCode(65 + oIdx) + ". ";
+                    optionsHtml += `
+                        <div class="relative">
+                            <input type="checkbox" id="opt_${q.id}_${oIdx}" value="${oIdx}" class="custom-checkbox sr-only" ${isChecked} onchange="saveMsAnswer(${q.id}, ${oIdx})">
+                            <label for="opt_${q.id}_${oIdx}" class="block p-4 border-2 border-slate-200 rounded-2xl cursor-pointer hover:border-purple-300 transition text-sm font-semibold text-slate-700 leading-relaxed">
+                                <span class="font-extrabold mr-2">[${prefix.trim()}]</span> ${opt}
+                            </label>
+                        </div>
+                    `;
+                });
+            }
+
+            container.innerHTML = `
+                <div class="space-y-4">
+                    <h3 class="text-base sm:text-lg font-bold text-slate-800 leading-snug">
+                        ${q.id}. ${q.q}
+                    </h3>
+                    <div class="space-y-3 pt-2">
+                        ${optionsHtml}
+                    </div>
+                </div>
+            `;
+
+            // Navigation buttons visibility
+            document.getElementById('btnPrev').disabled = idx === 0;
+            
+            if (idx === questionsDB.length - 1) {
+                document.getElementById('btnNext').classList.add('hidden');
+                document.getElementById('btnSubmitExam').classList.remove('hidden');
+            } else {
+                document.getElementById('btnNext').classList.remove('hidden');
+                document.getElementById('btnSubmitExam').classList.add('hidden');
+            }
+
+            renderQuestionGrid();
+        }
+
+        function saveAnswer(qId, val) {
+            userAnswers[qId] = val;
+            renderQuestionGrid();
+        }
+
+        function saveMsAnswer(qId, val) {
+            let current = userAnswers[qId] || [];
+            if (current.includes(val)) {
+                current = current.filter(item => item !== val);
+            } else {
+                current.push(val);
+            }
+            if (current.length === 0) {
+                delete userAnswers[qId];
+            } else {
+                userAnswers[qId] = current;
+            }
+            renderQuestionGrid();
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIdx > 0) renderQuestion(currentQuestionIdx - 1);
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIdx < questionsDB.length - 1) renderQuestion(currentQuestionIdx + 1);
+        }
+
+        /* Question Grid Matrix Logic */
+        function toggleQuestionGrid() {
+            const drawer = document.getElementById('questionGridDrawer');
+            drawer.classList.toggle('hidden');
+        }
+
+        function renderQuestionGrid() {
+            const container = document.getElementById('questionGridContainer');
+            let gridHtml = "";
+
+            questionsDB.forEach((q, idx) => {
+                const isAnswered = userAnswers[q.id] !== undefined;
+                const isCurrent = idx === currentQuestionIdx;
+                
+                let btnClass = "px-2 py-2 border rounded-xl text-xs font-bold text-center transition cursor-pointer ";
+                if (isAnswered) {
+                    btnClass += "bg-indigo-600 text-white border-indigo-700 ";
+                } else {
+                    btnClass += "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100 ";
+                }
+
+                if (isCurrent) {
+                    btnClass += "ring-2 ring-amber-400 font-extrabold ";
+                }
+
+                gridHtml += `
+                    <button onclick="jumpToQuestion(${idx})" class="${btnClass}">
+                        ${idx + 1}
+                    </button>
+                `;
+            });
+
+            container.innerHTML = gridHtml;
+        }
+
+        function jumpToQuestion(idx) {
+            renderQuestion(idx);
+            document.getElementById('questionGridDrawer').classList.add('hidden');
+        }
+
+        function confirmSubmitExam() {
+            const answeredCount = Object.keys(userAnswers).length;
+            if (answeredCount < questionsDB.length) {
+                if (!confirm(`Anda baru menjawab ${answeredCount} dari ${questionsDB.length} soal. Yakin ingin menyelesaikan ujian?`)) {
+                    return;
+                }
+            } else {
+                if (!confirm('Yakin ingin menyelesaikan dan mengirim ujian ini?')) {
+                    return;
+                }
+            }
+            calculateAndShowResult();
+        }
+
+        /* ================= SCORING & CALCULATION (MAX SCORE = 95) ================= */
+        function calculateAndShowResult() {
+            let scorePg = 0; // 35 soal * (55/35 = ~1.5714 poin)
+            let scoreTf = 0; // 5 soal * 3 poin = 15 poin
+            let scoreMs = 0; // 5 soal * 5 poin = 25 poin
+
+            const weightPg = 55 / 35; // ~1.5714
+            const weightTf = 3;       // 3.0
+            const weightMs = 5;       // 5.0 (setengah = 2.5)
+
+            questionsDB.forEach(q => {
+                const userAns = userAnswers[q.id];
+
+                if (q.type === 'pg') {
+                    if (userAns === q.ans) scorePg += weightPg;
+                } else if (q.type === 'tf') {
+                    if (userAns === q.ans) scoreTf += weightTf;
+                } else if (q.type === 'ms') {
+                    if (Array.isArray(userAns)) {
+                        const correctTarget = q.ans.sort().join(',');
+                        const userSorted = userAns.sort().join(',');
+
+                        if (userSorted === correctTarget) {
+                            scoreMs += weightMs; // 5 Poin Full
+                        } else {
+                            // Cek apakah minimal ada 1 opsi benar yang dipilih TANPA salah memilih opsi pengecoh
+                            const correctMatches = userAns.filter(item => q.ans.includes(item));
+                            const wrongMatches = userAns.filter(item => !q.ans.includes(item));
+
+                            if (correctMatches.length >= 1 && wrongMatches.length === 0) {
+                                scoreMs += (weightMs / 2); // Setengah Nilai (2.5 Poin)
+                            }
+                        }
+                    }
+                }
+            });
+
+            const totalScore = Math.round(scorePg + scoreTf + scoreMs);
+
+            // Render Result UI
+            document.getElementById('page-exam').classList.add('hidden');
+            document.getElementById('page-result').classList.remove('hidden');
+
+            document.getElementById('resultStudentInfo').innerText = `${studentData.nama} • Kelas ${studentData.kelas} (No. Absen ${studentData.absen})`;
+            document.getElementById('finalScoreDisplay').innerText = `${totalScore} / 95`;
+
+            document.getElementById('scorePg').innerText = `${Math.round(scorePg)} / 55 Poin`;
+            document.getElementById('scoreTf').innerText = `${Math.round(scoreTf)} / 15 Poin`;
+            document.getElementById('scoreMs').innerText = `${Math.round(scoreMs)} / 25 Poin`;
+
+            renderReviewAccordion();
+
+            // Send to Google Sheets Script directly using hardcoded URL
+            if (HARDCODED_SCRIPT_URL && HARDCODED_SCRIPT_URL !== "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE") {
+                sendDataToGoogleSheets(totalScore, Math.round(scorePg), Math.round(scoreTf), Math.round(scoreMs));
+            } else {
+                document.getElementById('syncStatusBadge').className = "inline-flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-600 rounded-full text-xs font-bold";
+                document.getElementById('syncStatusBadge').innerHTML = '<i class="fa-solid fa-circle-info"></i> Hasil tersimpan lokal (URL Google Script belum diisi di dalam kode HTML)';
+            }
+        }
+
+        function renderReviewAccordion() {
+            const container = document.getElementById('answersReviewContainer');
+            let reviewHtml = "";
+
+            questionsDB.forEach((q, idx) => {
+                const userAns = userAnswers[q.id];
+                let statusBadge = "";
+                let isCorrect = false;
+
+                if (q.type === 'pg' || q.type === 'tf') {
+                    isCorrect = userAns === q.ans;
+                    statusBadge = isCorrect 
+                        ? `<span class="px-3 py-1 bg-emerald-100 text-emerald-700 font-extrabold text-xs rounded-full">BENAR (+${q.type==='pg'?'1.57':'3'} Poin)</span>`
+                        : `<span class="px-3 py-1 bg-rose-100 text-rose-700 font-extrabold text-xs rounded-full">SALAH (0 Poin)</span>`;
+                } else if (q.type === 'ms') {
+                    const currentArr = userAns || [];
+                    const correctTarget = q.ans.sort().join(',');
+                    const userSorted = currentArr.sort().join(',');
+
+                    if (userSorted === correctTarget) {
+                        statusBadge = `<span class="px-3 py-1 bg-purple-100 text-purple-700 font-extrabold text-xs rounded-full">BENAR SEMPURNA (+5 Poin)</span>`;
+                    } else {
+                        const correctMatches = currentArr.filter(item => q.ans.includes(item));
+                        const wrongMatches = currentArr.filter(item => !q.ans.includes(item));
+
+                        if (correctMatches.length >= 1 && wrongMatches.length === 0) {
+                            statusBadge = `<span class="px-3 py-1 bg-amber-100 text-amber-700 font-extrabold text-xs rounded-full">BENAR SEBAGIAN (+2.5 Poin)</span>`;
+                        } else {
+                            statusBadge = `<span class="px-3 py-1 bg-rose-100 text-rose-700 font-extrabold text-xs rounded-full">SALAH (0 Poin)</span>`;
+                        }
+                    }
+                }
+
+                // Answer Text Formatter
+                let userAnsText = "Tidak Dijawab";
+                let correctAnsText = "";
+
+                if (q.type === 'pg' || q.type === 'tf') {
+                    if (userAns !== undefined) userAnsText = `${String.fromCharCode(65+userAns)}. ${q.opts[userAns]}`;
+                    correctAnsText = `${String.fromCharCode(65+q.ans)}. ${q.opts[q.ans]}`;
+                } else if (q.type === 'ms') {
+                    if (userAns && userAns.length > 0) {
+                        userAnsText = userAns.map(i => `${String.fromCharCode(65+i)}. ${q.opts[i]}`).join(" | ");
+                    }
+                    correctAnsText = q.ans.map(i => `${String.fromCharCode(65+i)}. ${q.opts[i]}`).join(" | ");
+                }
+
+                reviewHtml += `
+                    <div class="border border-slate-200 rounded-2xl p-5 space-y-3">
+                        <div class="flex justify-between items-start gap-4">
+                            <h4 class="font-bold text-slate-800 text-sm">
+                                ${idx+1}. ${q.q}
+                            </h4>
+                            ${statusBadge}
+                        </div>
+                        <div class="text-xs space-y-1">
+                            <p class="text-slate-600"><b>Jawaban Anda:</b> <span class="${isCorrect?'text-emerald-700':'text-rose-600'} font-semibold">${userAnsText}</span></p>
+                            <p class="text-slate-600"><b>Kunci Jawaban:</b> <span class="text-emerald-700 font-semibold">${correctAnsText}</span></p>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl text-xs text-slate-500">
+                            <b>💡 Pembahasan:</b> ${q.exp}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = reviewHtml;
+        }
+
+        /* ================= SYNC TO GOOGLE SHEETS / EXCEL ================= */
+        function sendDataToGoogleSheets(total, pg, tf, ms) {
+            const badge = document.getElementById('syncStatusBadge');
+            
+            const payload = {
+                timestamp: new Date().toLocaleString('id-ID'),
+                nama: studentData.nama,
+                kelas: studentData.kelas,
+                absen: studentData.absen,
+                nilaiTotal: total,
+                nilaiPg: pg,
+                nilaiTf: tf,
+                nilaiMs: ms,
+                rincianJawaban: JSON.stringify(userAnswers)
+            };
+
+            fetch(HARDCODED_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(() => {
+                badge.className = "inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-xs font-bold";
+                badge.innerHTML = '<i class="fa-solid fa-circle-check"></i> Hasil Ujian Terkirim ke Google Sheets / Excel Guru!';
+            }).catch(err => {
+                badge.className = "inline-flex items-center gap-2 px-4 py-2 bg-rose-50 text-rose-700 border border-rose-200 rounded-full text-xs font-bold";
+                badge.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Gagal mengirim ke server cloud. Silakan screenshot layar ini.';
+            });
+        }
+    </script>
+</body>
+</html>
